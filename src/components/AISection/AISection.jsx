@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import AgentFlowDiagram from './AgentFlowDiagram'
+import SectionNumber from '@/components/UI/SectionNumber'
 
 const CAPABILITIES = [
   {
@@ -59,12 +60,15 @@ export default function AISection() {
       className="max-w-7xl mx-auto px-8 py-24"
     >
       <p className="section-label ai-heading mb-4">// 05 AI Engineering</p>
-      <h2
-        className="ai-heading font-display font-bold text-text-primary mb-4"
-        style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em' }}
-      >
-        Not autocomplete. <span className="text-amber">Orchestrated intelligence.</span>
-      </h2>
+      <div className="relative mb-4">
+        <SectionNumber num="05" />
+        <h2
+          className="ai-heading relative z-10 font-display font-bold text-text-primary"
+          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
+        >
+          Not autocomplete. <span className="text-amber">Orchestrated intelligence.</span>
+        </h2>
+      </div>
       <p className="ai-heading text-text-secondary font-display mb-16 max-w-2xl">
         I use AI the way an architect uses structural analysis — as a precision tool I understand deeply, supervise carefully, and deploy strategically. The result: faster delivery without sacrificing quality or ownership.
       </p>

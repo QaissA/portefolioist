@@ -4,6 +4,8 @@ import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { PERSONAL } from '@/utils/constants'
 import Marquee from './Marquee'
+import SectionNumber from '@/components/UI/SectionNumber'
+import { useScrambleText } from '@/hooks/useScrambleText'
 
 const STATS = [
   { value: '3+', label: 'Years of Production Engineering' },
@@ -14,6 +16,7 @@ const STATS = [
 export default function About() {
   const sectionRef = useRef(null)
   const bioRef = useRef(null)
+  const scrambleRef = useScrambleText('ENGINEERING WITH INTENT')
 
   useGSAP(() => {
     const split = new SplitType(bioRef.current, { types: 'words' })
@@ -53,17 +56,23 @@ export default function About() {
 
   return (
     <section id="about" ref={sectionRef} className="max-w-7xl mx-auto px-8 py-24">
-      <p className="section-label about-label mb-6">// 01 About</p>
+      <p className="section-label about-label mb-6">
+        // 01 About — <span ref={scrambleRef} className="text-text-muted" />
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div>
-          <h2
-            className="font-display font-bold text-text-primary mb-8"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
-          >
-            Engineering with intent.<br />
-            <span className="text-amber">Shipping with precision.</span>
-          </h2>
+          <div className="relative mb-8">
+            <SectionNumber num="01" />
+            <h2
+              className="relative z-10 font-display font-bold text-text-primary"
+              style={{ paddingTop: '0.1em' }}
+              style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+            >
+              Engineering with intent.<br />
+              <span className="text-amber">Shipping with precision.</span>
+            </h2>
+          </div>
           <p ref={bioRef} className="text-text-secondary font-display leading-relaxed text-lg">
             {PERSONAL.bio}
           </p>

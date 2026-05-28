@@ -35,6 +35,7 @@ export default {
       animation: {
         marquee: 'marquee 30s linear infinite',
         'marquee-reverse': 'marquee-reverse 30s linear infinite',
+        'marquee-contact': 'marquee 18s linear infinite',
       },
       keyframes: {
         marquee: {

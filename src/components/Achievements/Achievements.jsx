@@ -3,6 +3,7 @@ import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { ACHIEVEMENTS } from '@/utils/constants'
 import MetricCard from './MetricCard'
+import SectionNumber from '@/components/UI/SectionNumber'
 
 export default function Achievements() {
   const sectionRef = useRef(null)
@@ -30,12 +31,15 @@ export default function Achievements() {
   return (
     <section id="achievements" ref={sectionRef} className="max-w-7xl mx-auto px-8 py-24">
       <p className="section-label achievements-heading mb-4">// 03 Impact & Numbers</p>
-      <h2
-        className="achievements-heading font-display font-bold text-text-primary mb-4"
-        style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em' }}
-      >
-        Results that speak <span className="text-amber">louder than claims.</span>
-      </h2>
+      <div className="relative mb-4">
+        <SectionNumber num="03" />
+        <h2
+          className="achievements-heading relative z-10 font-display font-bold text-text-primary"
+          style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
+        >
+          Results that speak <span className="text-amber">louder than claims.</span>
+        </h2>
+      </div>
       <p className="achievements-heading text-text-secondary font-display mb-16 max-w-xl">
         Every number represents a real project, a real team, and a real problem solved.
       </p>

@@ -1,13 +1,15 @@
 import { useRef } from 'react'
 import SplitType from 'split-type'
-import { gsap } from '@/utils/gsapConfig'
+import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { useMagnet } from '@/hooks/useMagnet'
 import { PERSONAL } from '@/utils/constants'
-import HeroBackground from './HeroBackground'
+import ParticleCanvas from './ParticleCanvas'
+import HeroParallaxText from './HeroParallaxText'
 
 export default function Hero() {
   const sectionRef = useRef(null)
+  const innerWrapRef = useRef(null)
   const nameRef = useRef(null)
   const titleRef = useRef(null)
   const taglineRef = useRef(null)
@@ -20,17 +22,22 @@ export default function Hero() {
     const nameSplit = new SplitType(nameRef.current, { types: 'chars' })
     const titleSplit = new SplitType(titleRef.current, { types: 'words' })
 
-    const tl = gsap.timeline({ delay: 0.2 })
+    // Wrap each char for clip-path masking
+    nameSplit.chars.forEach((char) => {
+      const wrap = document.createElement('span')
+      wrap.className = 'char-wrap'
+      char.parentNode.insertBefore(wrap, char)
+      wrap.appendChild(char)
+    })
 
-    tl.set(nameSplit.chars, { y: 100, opacity: 0, rotateX: -40 })
-      .to(nameSplit.chars, {
-        y: 0,
-        opacity: 1,
-        rotateX: 0,
-        duration: 0.9,
-        stagger: 0.035,
-        ease: 'power4.out',
-      })
+    const tl = gsap.timeline({ delay: 0.1 })
+
+    tl.from(nameSplit.chars, {
+      clipPath: 'inset(0 0 100% 0)',
+      duration: 0.9,
+      stagger: 0.035,
+      ease: 'power4.out',
+    })
       .set(titleSplit.words, { y: 30, opacity: 0 })
       .to(titleSplit.words, {
         y: 0,
@@ -55,6 +62,40 @@ export default function Hero() {
         opacity: 0,
         duration: 0.8,
       }, '-=0.2')
+
+    // Scroll parallax layers
+    const trigger = { trigger: sectionRef.current, start: 'top top', end: 'bottom top', scrub: true }
+    gsap.to(nameRef.current, { y: -80, ease: 'none', scrollTrigger: trigger })
+    gsap.to([titleRef.current, taglineRef.current], { y: -140, ease: 'none', scrollTrigger: trigger })
+    gsap.to(ctaRef.current, { y: -200, ease: 'none', scrollTrigger: trigger })
+
+    // 3D mouse tilt
+    const section = sectionRef.current
+    const inner = innerWrapRef.current
+
+    const onMouseMove = (e) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2
+      gsap.to(inner, {
+        rotateX: -ny * 4,
+        rotateY: nx * 4,
+        duration: 0.8,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      })
+    }
+
+    const onMouseLeave = () => {
+      gsap.to(inner, { rotateX: 0, rotateY: 0, duration: 1, ease: 'power3.out' })
+    }
+
+    section.addEventListener('mousemove', onMouseMove)
+    section.addEventListener('mouseleave', onMouseLeave)
+
+    return () => {
+      section.removeEventListener('mousemove', onMouseMove)
+      section.removeEventListener('mouseleave', onMouseLeave)
+    }
   }, [])
 
   return (
@@ -62,10 +103,16 @@ export default function Hero() {
       id="hero"
       ref={sectionRef}
       className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ perspective: '800px' }}
     >
-      <HeroBackground />
+      <ParticleCanvas />
+      <HeroParallaxText sectionRef={sectionRef} />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-8 pt-24 pb-16">
+      <div
+        ref={innerWrapRef}
+        className="relative w-full max-w-7xl mx-auto px-8 pt-24 pb-16"
+        style={{ zIndex: 10, transformStyle: 'preserve-3d', willChange: 'transform' }}
+      >
         <div className="max-w-5xl">
           <p className="section-label mb-6 tracking-[0.2em]">
             // Available for freelance — Rabat, Morocco
@@ -74,7 +121,7 @@ export default function Hero() {
           <h1
             ref={nameRef}
             className="font-display font-bold text-text-primary leading-none mb-4"
-            style={{ fontSize: 'clamp(3.5rem, 10vw, 9rem)', letterSpacing: '-0.03em', perspective: '600px' }}
+            style={{ fontSize: 'clamp(3.5rem, 10vw, 9rem)', letterSpacing: '-0.03em' }}
           >
             {PERSONAL.name}
           </h1>
@@ -99,6 +146,7 @@ export default function Hero() {
             <a
               {...magnetCta}
               href={`mailto:${PERSONAL.email}`}
+              data-cursor="MAIL"
               className="inline-flex items-center gap-2 bg-amber text-background font-display font-semibold px-8 py-4 rounded-full text-sm tracking-wide hover:bg-amber/90 transition-colors duration-200"
             >
               Let's work together
@@ -106,6 +154,7 @@ export default function Hero() {
             </a>
             <button
               {...magnetSecondary}
+              data-cursor="VIEW"
               onClick={() => document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' })}
               className="inline-flex items-center gap-2 border border-border text-text-secondary font-mono text-sm px-8 py-4 rounded-full hover:border-amber/50 hover:text-text-primary transition-colors duration-200"
             >
