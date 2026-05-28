@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(zcat webfetch-1776600750650-qtpelr.bin)",
+      "Bash(gunzip -c webfetch-1776600750650-qtpelr.bin)",
+      "Bash(gunzip -c \"/Users/mac/.claude/projects/-Users-mac-Desktop-portefolio/f14c32f5-355a-4318-87dc-25a9423e8a61/tool-results/webfetch-1776600750650-qtpelr.bin\")",
+      "Bash(tar -x -C /tmp/design-bundle)",
+      "Read(//tmp/**)",
+      "Bash(open *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(npm create *)",
+      "Bash(npx tailwindcss *)",
+      "Bash(node *)"
+    ]
+  }
+}

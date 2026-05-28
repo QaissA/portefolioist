@@ -1,0 +1,52 @@
+{
+  "hash": "74bf8c27",
+  "configHash": "9047ecef",
+  "lockfileHash": "4fcfe1ca",
+  "browserHash": "b6baaa59",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "12b7fdfc",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "f2eb9ee0",
+      "needsInterop": true
+    },
+    "gsap": {
+      "src": "../../node_modules/gsap/index.js",
+      "file": "gsap.js",
+      "fileHash": "0b046649",
+      "needsInterop": false
+    },
+    "gsap/ScrollTrigger": {
+      "src": "../../node_modules/gsap/ScrollTrigger.js",
+      "file": "gsap_ScrollTrigger.js",
+      "fileHash": "ed9f8d2f",
+      "needsInterop": false
+    },
+    "gsap/TextPlugin": {
+      "src": "../../node_modules/gsap/TextPlugin.js",
+      "file": "gsap_TextPlugin.js",
+      "fileHash": "fad79c4e",
+      "needsInterop": false
+    },
+    "gsap/Flip": {
+      "src": "../../node_modules/gsap/Flip.js",
+      "file": "gsap_Flip.js",
+      "fileHash": "5f3672aa",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-GG27PVQU": {
+      "file": "chunk-GG27PVQU.js"
+    },
+    "chunk-BUSYA2B4": {
+      "file": "chunk-BUSYA2B4.js"
+    }
+  }
+}
