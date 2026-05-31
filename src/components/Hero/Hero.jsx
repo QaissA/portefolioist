@@ -1,11 +1,12 @@
-import { useRef } from 'react'
+import { useRef, Suspense, lazy } from 'react'
 import SplitType from 'split-type'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { useMagnet } from '@/hooks/useMagnet'
 import { PERSONAL } from '@/utils/constants'
-import ParticleCanvas from './ParticleCanvas'
 import HeroParallaxText from './HeroParallaxText'
+
+const HeroScene = lazy(() => import('./HeroScene'))
 
 export default function Hero() {
   const sectionRef = useRef(null)
@@ -105,7 +106,9 @@ export default function Hero() {
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{ perspective: '800px' }}
     >
-      <ParticleCanvas />
+      <Suspense fallback={null}>
+        <HeroScene />
+      </Suspense>
       <HeroParallaxText sectionRef={sectionRef} />
 
       <div
