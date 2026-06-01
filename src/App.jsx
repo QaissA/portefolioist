@@ -1,6 +1,8 @@
 import { Suspense, lazy, useState } from 'react'
 import { useLenis } from '@/hooks/useLenis'
+import { GameProvider } from '@/game/GameContext'
 import Cursor from '@/components/Cursor/Cursor'
+import GameHUD from '@/components/Game/GameHUD'
 import Navbar from '@/components/Navbar/Navbar'
 import ScrollProgress from '@/components/UI/ScrollProgress'
 import Hero from '@/components/Hero/Hero'
@@ -34,14 +36,17 @@ export default function App() {
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <div className="bg-background min-h-screen relative">
-      <Preloader onComplete={() => setLoaded(true)} />
-      <Cursor />
-      <ScrollProgress />
-      <Navbar />
-      <div style={{ visibility: loaded ? 'visible' : 'hidden' }}>
-        {loaded && <Main />}
+    <GameProvider>
+      <div className="bg-background min-h-screen relative">
+        <Preloader onComplete={() => setLoaded(true)} />
+        <Cursor />
+        <ScrollProgress />
+        <Navbar />
+        <div style={{ visibility: loaded ? 'visible' : 'hidden' }}>
+          {loaded && <Main />}
+        </div>
+        {loaded && <GameHUD />}
       </div>
-    </div>
+    </GameProvider>
   )
 }

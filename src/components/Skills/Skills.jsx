@@ -3,11 +3,14 @@ import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import SectionNumber from '@/components/UI/SectionNumber'
 import { useScrambleText } from '@/hooks/useScrambleText'
+import { useGame } from '@/game/GameContext'
 import SkillsScatter from './SkillsScatter'
+import SkillsGame from './SkillsGame'
 
 export default function Skills() {
   const sectionRef = useRef(null)
   const scrambleRef = useScrambleText('SKILLS ARSENAL')
+  const { playMode } = useGame()
 
   useGSAP(() => {
     gsap.from('.skills-heading', {
@@ -33,7 +36,7 @@ export default function Skills() {
         </h2>
       </div>
 
-      <SkillsScatter />
+      {playMode ? <SkillsGame /> : <SkillsScatter />}
     </section>
   )
 }

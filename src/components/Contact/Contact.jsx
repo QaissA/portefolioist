@@ -6,6 +6,13 @@ import { PERSONAL } from '@/utils/constants'
 import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight } from 'react-icons/fi'
 import { useScrambleText } from '@/hooks/useScrambleText'
 import SectionNumber from '@/components/UI/SectionNumber'
+import { useGame } from '@/game/GameContext'
+
+const FINALE_MAILTO = `mailto:${PERSONAL.email}?subject=${encodeURIComponent(
+  'I beat your Dev Quest 🎮',
+)}&body=${encodeURIComponent(
+  "Hey Qaiss — I played through every section of your portfolio. Let's talk.",
+)}`
 
 const MARQUEE_TEXT = "LET'S WORK · AVAILABLE NOW · LET'S WORK · AVAILABLE NOW · "
 
@@ -16,6 +23,7 @@ export default function Contact() {
   const magnetLi = useMagnet(0.5)
   const magnetMail = useMagnet(0.5)
   const scrambleRef = useScrambleText("LET'S BUILD")
+  const { allDone, level } = useGame()
 
   useGSAP(() => {
     gsap.from('.contact-block > *', {
@@ -105,6 +113,30 @@ export default function Contact() {
               <FiArrowUpRight className="text-xl" aria-hidden="true" />
             </a>
           </div>
+
+          {/* Dev Quest finale — unlocked after completing all 4 section games */}
+          {allDone && (
+            <div className="mb-16 rounded-2xl border border-skill-backend/40 bg-skill-backend/5 p-6 sm:p-8 font-mono">
+              <p className="text-skill-backend text-xs tracking-wider mb-3">
+                {'> dev_quest --status'}
+              </p>
+              <p className="text-skill-backend text-sm mb-4">
+                ✓ ALL SYSTEMS GREEN — Dev Quest complete (LVL {level})
+              </p>
+              <p className="font-display text-text-secondary text-sm sm:text-base leading-relaxed mb-6 max-w-xl">
+                You explored every corner and cleared all four challenges. That curiosity is
+                exactly what I bring to engineering. Here&apos;s a fast-track to my inbox —
+                subject line&apos;s already written.
+              </p>
+              <a
+                href={FINALE_MAILTO}
+                className="inline-flex items-center gap-2 bg-skill-backend text-background font-display font-semibold px-6 py-3 rounded-full text-sm hover:opacity-90 transition-opacity"
+              >
+                Claim your reply
+                <FiArrowUpRight className="text-base" aria-hidden="true" />
+              </a>
+            </div>
+          )}
 
           {/* Footer row */}
           <div className="flex flex-wrap items-center justify-between gap-6 pt-8 border-t border-border/50">

@@ -5,6 +5,7 @@ import { useGSAP } from '@/hooks/useGSAP'
 import { useMagnet } from '@/hooks/useMagnet'
 import { PERSONAL } from '@/utils/constants'
 import HeroParallaxText from './HeroParallaxText'
+import { useBubbleGame, BubbleGameHUD } from './HeroBubbleGame'
 
 const HeroScene = lazy(() => import('./HeroScene'))
 
@@ -18,6 +19,7 @@ export default function Hero() {
   const scrollHintRef = useRef(null)
   const magnetCta = useMagnet(0.35)
   const magnetSecondary = useMagnet(0.3)
+  const bubbleGame = useBubbleGame()
 
   useGSAP(() => {
     const nameSplit = new SplitType(nameRef.current, { types: 'chars' })
@@ -107,9 +109,10 @@ export default function Hero() {
       style={{ perspective: '800px' }}
     >
       <Suspense fallback={null}>
-        <HeroScene />
+        <HeroScene onPop={bubbleGame.onPop} />
       </Suspense>
       <HeroParallaxText sectionRef={sectionRef} />
+      <BubbleGameHUD {...bubbleGame} />
 
       <div
         ref={innerWrapRef}

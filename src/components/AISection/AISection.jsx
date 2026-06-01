@@ -1,7 +1,9 @@
 import { useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
+import { useGame } from '@/game/GameContext'
 import AgentFlowDiagram from './AgentFlowDiagram'
+import AIRouteGame from './AIRouteGame'
 import SectionNumber from '@/components/UI/SectionNumber'
 
 const CAPABILITIES = [
@@ -25,6 +27,7 @@ const CAPABILITIES = [
 
 export default function AISection() {
   const sectionRef = useRef(null)
+  const { playMode } = useGame()
 
   useGSAP(() => {
     gsap.from('.ai-heading', {
@@ -105,9 +108,11 @@ export default function AISection() {
         </div>
 
         <div className="ai-diagram-wrap hidden md:block">
-          <p className="section-label text-center mb-6">// Agent Orchestration Flow</p>
+          <p className="section-label text-center mb-6">
+            {playMode ? '// Route the Prompt' : '// Agent Orchestration Flow'}
+          </p>
           <div className="bg-surface border border-border/50 rounded-2xl p-6">
-            <AgentFlowDiagram />
+            {playMode ? <AIRouteGame /> : <AgentFlowDiagram />}
           </div>
         </div>
       </div>

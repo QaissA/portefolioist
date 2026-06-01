@@ -4,6 +4,8 @@ import { useGSAP } from '@/hooks/useGSAP'
 import { EXPERIENCE } from '@/utils/constants'
 import SectionNumber from '@/components/UI/SectionNumber'
 import { useScrambleText } from '@/hooks/useScrambleText'
+import { useGame } from '@/game/GameContext'
+import TimelineGame from './TimelineGame'
 
 function TimelineCardH({ company, role, period, location, highlights, current, index }) {
   return (
@@ -48,6 +50,7 @@ export default function Timeline() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
   const scrambleRef = useScrambleText('EXPERIENCE')
+  const { playMode } = useGame()
 
   useGSAP(() => {
     gsap.from('.timeline-heading', {
@@ -62,7 +65,7 @@ export default function Timeline() {
   useLayoutEffect(() => {
     const section = sectionRef.current
     const track = trackRef.current
-    if (!section || !track) return
+    if (!section || !track || playMode) return // play mode shows the sort game, no pin
 
     const CARD_W = 380
     const CARD_GAP = 24
@@ -103,14 +106,14 @@ export default function Timeline() {
     ScrollTrigger.refresh()
 
     return () => st.kill()
-  }, [])
+  }, [playMode])
 
   return (
     <section
       id="timeline"
       ref={sectionRef}
-      className="overflow-hidden"
-      style={{ height: '100vh' }}
+      className={playMode ? '' : 'overflow-hidden'}
+      style={playMode ? undefined : { height: '100vh' }}
     >
       {/* Header — pinned at top inside the section */}
       <div className="max-w-7xl mx-auto px-8 pt-24 pb-10">
@@ -131,16 +134,22 @@ export default function Timeline() {
         </p>
       </div>
 
-      {/* Horizontal track */}
-      <div
-        ref={trackRef}
-        className="flex gap-6 px-8"
-        style={{ width: 'max-content', paddingRight: '120px', perspective: '800px' }}
-      >
-        {EXPERIENCE.map((exp, i) => (
-          <TimelineCardH key={exp.id} {...exp} index={i} />
-        ))}
-      </div>
+      {playMode ? (
+        <div className="max-w-7xl mx-auto px-8 pb-24">
+          <TimelineGame />
+        </div>
+      ) : (
+        /* Horizontal track */
+        <div
+          ref={trackRef}
+          className="flex gap-6 px-8"
+          style={{ width: 'max-content', paddingRight: '120px', perspective: '800px' }}
+        >
+          {EXPERIENCE.map((exp, i) => (
+            <TimelineCardH key={exp.id} {...exp} index={i} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

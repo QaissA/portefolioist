@@ -1,7 +1,8 @@
 import { useRef, useLayoutEffect } from 'react'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 
-const NODES = [
+// Shared agent graph — also consumed by the "Route the Prompt" game (AIRouteGame.jsx)
+export const NODES = [
   { id: 'input', label: 'User Prompt', x: 160, y: 20, type: 'io', w: 140, h: 44 },
   { id: 'orch', label: 'Orchestrator', x: 160, y: 110, type: 'core', w: 140, h: 44 },
   { id: 'router', label: 'Tool Router', x: 160, y: 200, type: 'core', w: 140, h: 44 },
@@ -13,7 +14,7 @@ const NODES = [
   { id: 'output', label: 'Final Output', x: 160, y: 580, type: 'io', w: 140, h: 44 },
 ]
 
-const PATHS = [
+export const PATHS = [
   { from: 'input', to: 'orch' },
   { from: 'orch', to: 'router' },
   { from: 'router', to: 'search' },
@@ -26,18 +27,18 @@ const PATHS = [
   { from: 'synth', to: 'output' },
 ]
 
-function getCenter(node) {
+export function getCenter(node) {
   return { x: node.x + node.w / 2, y: node.y + node.h / 2 }
 }
 
-function getNodeColor(type) {
+export function getNodeColor(type) {
   if (type === 'core') return '#F59E0B'
   if (type === 'tool') return '#8B5CF6'
   if (type === 'store') return '#10B981'
   return '#38BDF8'
 }
 
-function buildPath(from, to) {
+export function buildPath(from, to) {
   const f = getCenter(from)
   const t = getCenter(to)
   const my = (f.y + t.y) / 2
