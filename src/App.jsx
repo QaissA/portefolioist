@@ -1,5 +1,6 @@
 import { Suspense, lazy, useState } from 'react'
 import { useLenis } from '@/hooks/useLenis'
+import { useVisitNotification } from '@/hooks/useVisitNotification'
 import { GameProvider } from '@/game/GameContext'
 import Cursor from '@/components/Cursor/Cursor'
 import GameHUD from '@/components/Game/GameHUD'
@@ -34,6 +35,7 @@ function Main() {
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
+  useVisitNotification()
 
   return (
     <GameProvider>
