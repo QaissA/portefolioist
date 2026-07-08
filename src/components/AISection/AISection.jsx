@@ -60,7 +60,7 @@ export default function AISection() {
     <section
       id="ai-section"
       ref={sectionRef}
-      className="max-w-7xl mx-auto px-8 py-24"
+      className="px-8 py-24"
     >
       <p className="section-label ai-heading mb-4">// 05 AI Engineering</p>
       <div className="relative mb-4">

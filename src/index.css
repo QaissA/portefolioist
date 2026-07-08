@@ -3,11 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #0A0A0A;
-  --color-amber: #F59E0B;
-  --color-surface: #111111;
-  --color-surface-2: #1A1A1A;
-  --color-border: #2A2A2A;
+  /* Themeable colors as space-separated RGB channels (consumed via rgb(var(--x) / a)) */
+  --color-bg: 10 10 10;
+  --color-surface: 17 17 17;
+  --color-surface-2: 26 26 26;
+  --color-border: 42 42 42;
+  --color-accent: 245 158 11;
+  --color-accent-400: 251 191 36;
+  --color-accent-600: 217 119 6;
+  --color-accent-2: 236 72 153;
+  --color-text-primary: 245 245 245;
+  --color-text-secondary: 161 161 170;
+  --color-text-muted: 82 82 91;
+  /* Themeable typography */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-scale: 1;
+}
+
+html {
+  font-size: calc(100% * var(--font-scale));
 }
 
 /* Critical: prevents Lenis + native scroll-behavior fighting */
@@ -23,8 +38,8 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
-  color: #F5F5F5;
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-text-primary));
   cursor: none;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -45,9 +60,9 @@ body::before {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-track { background: rgb(var(--color-bg)); }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-amber); }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-accent)); }
 
 /* SplitType char — required for GSAP transforms */
 .char { display: inline-block; }
@@ -55,9 +70,9 @@ body::before {
 
 /* Section label style */
 .section-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--color-amber);
+  color: rgb(var(--color-accent));
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -69,7 +84,7 @@ body::before {
 
 /* Focus visible ring */
 *:focus-visible {
-  outline: 2px solid var(--color-amber);
+  outline: 2px solid rgb(var(--color-accent));
   outline-offset: 3px;
 }
 
@@ -78,7 +93,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: #0A0A0A;
+  background: rgb(var(--color-bg));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -125,7 +140,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 2px;
-  background: #F59E0B;
+  background: linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-accent-2)));
   transform-origin: left center;
   z-index: 60;
   pointer-events: none;

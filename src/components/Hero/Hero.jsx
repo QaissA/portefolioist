@@ -116,7 +116,9 @@ export default function Hero() {
 
       <div
         ref={innerWrapRef}
-        className="relative w-full max-w-7xl mx-auto px-8 pt-24 pb-16"
+        className={`relative w-full px-8 pt-24 pb-16 transition-opacity duration-500 ${
+          bubbleGame.playMode ? 'pointer-events-none opacity-0' : 'opacity-100'
+        }`}
         style={{ zIndex: 10, transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         <div className="max-w-5xl">

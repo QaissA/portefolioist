@@ -116,7 +116,7 @@ export default function Timeline() {
       style={playMode ? undefined : { height: '100vh' }}
     >
       {/* Header — pinned at top inside the section */}
-      <div className="max-w-7xl mx-auto px-8 pt-24 pb-10">
+      <div className="px-8 pt-24 pb-10">
         <p className="section-label timeline-heading mb-4">
           // 04 <span ref={scrambleRef} />
         </p>
@@ -135,7 +135,7 @@ export default function Timeline() {
       </div>
 
       {playMode ? (
-        <div className="max-w-7xl mx-auto px-8 pb-24">
+        <div className="px-8 pb-24">
           <TimelineGame />
         </div>
       ) : (

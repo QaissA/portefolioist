@@ -22,7 +22,7 @@ export default function Skills() {
   }, [])
 
   return (
-    <section id="skills" ref={sectionRef} className="max-w-7xl mx-auto px-8 py-24">
+    <section id="skills" ref={sectionRef} className="px-8 py-24">
       <p className="section-label skills-heading mb-4">
         // 02 <span ref={scrambleRef} />
       </p>

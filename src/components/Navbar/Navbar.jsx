@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { PERSONAL } from '@/utils/constants'
+import { useTheme } from '@/theme/ThemeContext'
 
 const SECTIONS = [
   { id: 'hero', label: 'Home' },
@@ -14,8 +15,10 @@ const SECTIONS = [
 
 export default function Navbar() {
   const navRef = useRef(null)
+  const { theme } = useTheme()
   const [active, setActive] = useState('hero')
   const [scrolled, setScrolled] = useState(false)
+  const visibleSections = SECTIONS.filter((s) => !theme.hiddenBlocks.includes(s.id))
 
   useEffect(() => {
     const nav = navRef.current
@@ -63,7 +66,7 @@ export default function Navbar() {
       </button>
 
       <div className="hidden md:flex items-center gap-1">
-        {SECTIONS.map(({ id, label }) => (
+        {visibleSections.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => scrollTo(id)}

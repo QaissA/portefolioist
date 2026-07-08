@@ -55,7 +55,7 @@ export default function About() {
   }, [])
 
   return (
-    <section id="about" ref={sectionRef} className="max-w-7xl mx-auto px-8 py-24">
+    <section id="about" ref={sectionRef} className="px-8 py-24">
       <p className="section-label about-label mb-6">
         // 01 About — <span ref={scrambleRef} className="text-text-muted" />
       </p>

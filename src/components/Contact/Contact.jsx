@@ -65,7 +65,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8">
+      <div className="px-8">
         <div className="contact-block">
           {/* Section label */}
           <p className="section-label mb-6">

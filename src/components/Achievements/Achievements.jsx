@@ -29,7 +29,7 @@ export default function Achievements() {
   }, [])
 
   return (
-    <section id="achievements" ref={sectionRef} className="max-w-7xl mx-auto px-8 py-24">
+    <section id="achievements" ref={sectionRef} className="px-8 py-24">
       <p className="section-label achievements-heading mb-4">// 03 Impact & Numbers</p>
       <div className="relative mb-4">
         <SectionNumber num="03" />

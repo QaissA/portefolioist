@@ -4,22 +4,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0A0A0A',
-        surface: '#111111',
-        'surface-2': '#1A1A1A',
-        border: '#2A2A2A',
+        background: 'rgb(var(--color-bg) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-2': 'rgb(var(--color-surface-2) / <alpha-value>)',
+        border: 'rgb(var(--color-border) / <alpha-value>)',
         amber: {
-          DEFAULT: '#F59E0B',
+          DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
           50: '#FFFBEB',
           100: '#FEF3C7',
-          400: '#FBBF24',
-          500: '#F59E0B',
-          600: '#D97706',
+          400: 'rgb(var(--color-accent-400) / <alpha-value>)',
+          500: 'rgb(var(--color-accent) / <alpha-value>)',
+          600: 'rgb(var(--color-accent-600) / <alpha-value>)',
           900: '#78350F',
         },
-        'text-primary': '#F5F5F5',
-        'text-secondary': '#A1A1AA',
-        'text-muted': '#52525B',
+        accent2: 'rgb(var(--color-accent-2) / <alpha-value>)',
+        'text-primary': 'rgb(var(--color-text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--color-text-secondary) / <alpha-value>)',
+        'text-muted': 'rgb(var(--color-text-muted) / <alpha-value>)',
         skill: {
           frontend: '#F59E0B',
           backend: '#10B981',
@@ -29,8 +30,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Space Grotesk', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        display: ['var(--font-display)', 'Space Grotesk', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       animation: {
         marquee: 'marquee 30s linear infinite',
