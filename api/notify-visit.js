@@ -21,6 +21,47 @@ function flag(code) {
   )
 }
 
+// Best-effort, dependency-free User-Agent parser -> "Chrome 120 on Windows 11".
+function parseUA(ua) {
+  if (!ua || ua === 'unknown') return { pretty: 'unknown', device: 'unknown', isBot: false }
+
+  const isBot = /bot|crawler|spider|crawling|slurp|bingpreview|facebookexternalhit|headless/i.test(ua)
+
+  // OS
+  let os = 'Unknown OS'
+  let m
+  if ((m = ua.match(/Windows NT ([\d.]+)/))) {
+    const map = { '10.0': '10/11', '6.3': '8.1', '6.2': '8', '6.1': '7' }
+    os = `Windows ${map[m[1]] || m[1]}`
+  } else if (/iPhone|iPad|iPod/.test(ua)) {
+    m = ua.match(/OS ([\d_]+)/)
+    os = `iOS ${m ? m[1].replace(/_/g, '.') : ''}`.trim()
+  } else if ((m = ua.match(/Mac OS X ([\d_]+)/))) {
+    os = `macOS ${m[1].replace(/_/g, '.')}`
+  } else if (/Android/.test(ua)) {
+    m = ua.match(/Android ([\d.]+)/)
+    os = `Android ${m ? m[1] : ''}`.trim()
+  } else if (/Linux/.test(ua)) {
+    os = 'Linux'
+  }
+
+  // Browser (order matters — Edge/Opera masquerade as Chrome)
+  let browser = 'Unknown browser'
+  if ((m = ua.match(/Edg(?:e|A|iOS)?\/([\d.]+)/))) browser = `Edge ${m[1].split('.')[0]}`
+  else if ((m = ua.match(/OPR\/([\d.]+)/)) || (m = ua.match(/Opera\/([\d.]+)/))) browser = `Opera ${m[1].split('.')[0]}`
+  else if ((m = ua.match(/SamsungBrowser\/([\d.]+)/))) browser = `Samsung Internet ${m[1].split('.')[0]}`
+  else if ((m = ua.match(/Firefox\/([\d.]+)/))) browser = `Firefox ${m[1].split('.')[0]}`
+  else if (/iPhone|iPad|iPod|Macintosh/.test(ua) && (m = ua.match(/Version\/([\d.]+).*Safari/))) browser = `Safari ${m[1].split('.')[0]}`
+  else if ((m = ua.match(/Chrome\/([\d.]+)/))) browser = `Chrome ${m[1].split('.')[0]}`
+
+  // Device type
+  let device = 'Desktop'
+  if (/iPad|Tablet/.test(ua)) device = 'Tablet'
+  else if (/Mobi|iPhone|Android.*Mobile/.test(ua)) device = 'Mobile'
+
+  return { pretty: `${browser} on ${os}`, device, isBot }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -38,15 +79,65 @@ export default async function handler(req, res) {
 
   // Visitor context (best-effort — nothing here is trusted/critical).
   const body = typeof req.body === 'object' && req.body ? req.body : {}
-  const ip =
-    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown'
-  const country = req.headers['x-vercel-ip-country'] || 'unknown'
-  const city = decodeURIComponent(req.headers['x-vercel-ip-city'] || 'unknown')
-  const userAgent = req.headers['user-agent'] || 'unknown'
+  const h = req.headers
+  const ip = (h['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown'
+
+  // --- Geo (from Vercel edge headers) ---
+  const country = h['x-vercel-ip-country'] || 'unknown'
+  const city = decodeURIComponent(h['x-vercel-ip-city'] || 'unknown')
+  const region = decodeURIComponent(h['x-vercel-ip-country-region'] || '')
+  const lat = h['x-vercel-ip-latitude'] || ''
+  const lng = h['x-vercel-ip-longitude'] || ''
+  const geoTz = h['x-vercel-ip-timezone'] || ''
+  const acceptLang = (h['accept-language'] || '').split(',')[0].trim() || 'unknown'
+  const proto = h['x-forwarded-proto'] || 'unknown'
+
+  // --- Device (parse the raw UA into something readable) ---
+  const userAgent = h['user-agent'] || 'unknown'
+  const { pretty: devicePretty, device: deviceType, isBot } = parseUA(userAgent)
+
+  // --- Client-reported context (from the fetch body) ---
   const referrer = body.referrer || 'direct'
   const page = body.page || 'unknown'
+  const url = body.url || 'unknown'
+  const query = body.query || ''
   const tz = body.timezone || 'unknown'
+  const localTime = body.localTime || 'unknown'
+  const language = body.language || 'unknown'
   const screen = body.screen || 'unknown'
+  const viewport = body.viewport || 'unknown'
+  const pixelRatio = body.pixelRatio || 'unknown'
+  const colorScheme = body.colorScheme || 'unknown'
+  const cores = body.cores || 'unknown'
+  const memory = body.memory || 'unknown'
+  const touch = body.touch === true ? 'Yes' : body.touch === false ? 'No' : 'unknown'
+  const connection = body.connection || 'unknown'
+  const isReturning = body.isReturning === true
+  const visitCount = body.visitCount || 'unknown'
+
+  // Parse UTM / campaign params out of the query string, if any.
+  const utm = {}
+  try {
+    const sp = new URLSearchParams(query)
+    for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ref']) {
+      const val = sp.get(key)
+      if (val) utm[key] = val
+    }
+  } catch {
+    // Malformed query — ignore.
+  }
+  const utmLabel = Object.keys(utm).length
+    ? Object.entries(utm).map(([k, v]) => `${k.replace('utm_', '')}=${v}`).join(' · ')
+    : ''
+
+  // One-click map link when we have coordinates.
+  const mapsUrl = lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : ''
+
+  const visitorType = isBot
+    ? '🤖 Bot / crawler'
+    : isReturning
+      ? `Returning (visit #${visitCount})`
+      : 'First-time visitor'
 
   const now = new Date()
   const when = now.toISOString()
@@ -64,6 +155,7 @@ export default async function handler(req, res) {
 
   const locParts = []
   if (city !== 'unknown') locParts.push(city)
+  if (region) locParts.push(region)
   if (country !== 'unknown') locParts.push(country)
   const locationLabel = locParts.length
     ? `${locParts.join(', ')} ${flag(country)}`.trim()
@@ -73,30 +165,62 @@ export default async function handler(req, res) {
   const text = [
     `New visit on your portfolio`,
     ``,
-    `Time:      ${whenPretty}`,
-    `Page:      ${page}`,
-    `Referrer:  ${referrer}`,
-    `Location:  ${locationLabel}`,
-    `IP:        ${ip}`,
-    `Timezone:  ${tz}`,
-    `Screen:    ${screen}`,
-    `Device:    ${userAgent}`,
-  ].join('\n')
+    `Visitor:    ${visitorType}`,
+    `Time:       ${whenPretty}`,
+    `Local time: ${localTime}`,
+    `Page:       ${page}`,
+    `URL:        ${url}`,
+    utmLabel ? `Campaign:   ${utmLabel}` : null,
+    `Referrer:   ${referrer}`,
+    `Location:   ${locationLabel}`,
+    mapsUrl ? `Map:        ${mapsUrl}` : null,
+    lat && lng ? `Coords:     ${lat}, ${lng}` : null,
+    `Timezone:   ${tz}${geoTz && geoTz !== tz ? ` (geo: ${geoTz})` : ''}`,
+    `Language:   ${language}${acceptLang !== 'unknown' ? ` / ${acceptLang}` : ''}`,
+    `Device:     ${devicePretty} (${deviceType})`,
+    `Theme:      ${colorScheme}`,
+    `Screen:     ${screen} @${pixelRatio}x`,
+    `Viewport:   ${viewport}`,
+    `Touch:      ${touch}`,
+    `Hardware:   ${cores} cores, ${memory}GB RAM`,
+    `Connection: ${connection}`,
+    `IP:         ${ip} (${proto})`,
+    `User-Agent: ${userAgent}`,
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   // --- HTML email ---
+  // Each row: [icon, label, value, optional href]. Rows with an empty value
+  // are dropped so we never show blank fields.
   const rows = [
-    ['🌍', 'Location', locationLabel],
+    ['👤', 'Visitor', visitorType],
+    ['🌍', 'Location', locationLabel, mapsUrl],
+    ['📍', 'Coordinates', lat && lng ? `${lat}, ${lng}` : ''],
     ['🔗', 'Referrer', referrer],
+    ['📢', 'Campaign', utmLabel],
     ['📄', 'Page', page],
-    ['🕑', 'Local timezone', tz],
-    ['🖥️', 'Screen', screen],
-    ['📡', 'IP address', ip],
-    ['🧭', 'Device', userAgent],
-  ]
+    ['🌐', 'Full URL', url === 'unknown' ? '' : url, url === 'unknown' ? '' : url],
+    ['🕑', 'Local time', localTime],
+    ['🧭', 'Timezone', geoTz && geoTz !== tz ? `${tz} (geo: ${geoTz})` : tz],
+    ['🗣️', 'Language', acceptLang !== 'unknown' && acceptLang !== language ? `${language} / ${acceptLang}` : language],
+    ['💻', 'Device', `${devicePretty} · ${deviceType}`],
+    ['🎨', 'Theme', colorScheme],
+    ['🖥️', 'Screen', pixelRatio !== 'unknown' ? `${screen} @${pixelRatio}x` : screen],
+    ['📐', 'Viewport', viewport],
+    ['✋', 'Touch', touch],
+    ['⚙️', 'Hardware', cores !== 'unknown' || memory !== 'unknown' ? `${cores} cores · ${memory}GB RAM` : ''],
+    ['📶', 'Connection', connection],
+    ['📡', 'IP address', `${ip} · ${proto}`],
+    ['🧬', 'User-Agent', userAgent],
+  ].filter(([, , value]) => value && value !== 'unknown')
 
   const rowsHtml = rows
-    .map(
-      ([icon, label, value], i) => `
+    .map(([icon, label, value, href], i) => {
+      const valueInner = href
+        ? `<a href="${esc(href)}" style="color:#6d9bff;text-decoration:none;">${esc(value)}</a>`
+        : esc(value)
+      return `
       <tr>
         <td style="padding:14px 20px;border-top:${
           i === 0 ? '0' : '1px solid #23262e'
@@ -106,10 +230,10 @@ export default async function handler(req, res) {
         <td style="padding:14px 20px;border-top:${
           i === 0 ? '0' : '1px solid #23262e'
         };vertical-align:top;color:#e8eaed;font-size:14px;font-weight:500;word-break:break-word;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">
-          ${esc(value)}
+          ${valueInner}
         </td>
-      </tr>`,
-    )
+      </tr>`
+    })
     .join('')
 
   const html = `<!doctype html>
@@ -174,7 +298,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from,
         to,
-        subject: `👀 New portfolio visit — ${locationLabel}`,
+        subject: isBot
+          ? `🤖 Bot visit — ${locationLabel}`
+          : `👀 New${isReturning ? ' (returning)' : ''} portfolio visit — ${locationLabel}`,
         html,
         text,
       }),
