@@ -70,5 +70,69 @@ export function useVisitNotification() {
     }).catch(() => {
       // Never let a notification failure affect the visitor.
     })
+
+    // --- Session timing ---------------------------------------------------
+    // Measure how long they stayed, and how much of that was spent in the 3D
+    // Drive Mode (which fires drivemode:on / drivemode:off on enter / exit).
+    const sessionStart = Date.now()
+    let sceneMs = 0
+    let sceneEnterAt = null
+    const onSceneOn = () => {
+      sceneEnterAt = Date.now()
+    }
+    const onSceneOff = () => {
+      if (sceneEnterAt) {
+        sceneMs += Date.now() - sceneEnterAt
+        sceneEnterAt = null
+      }
+    }
+    window.addEventListener('drivemode:on', onSceneOn)
+    window.addEventListener('drivemode:off', onSceneOff)
+
+    // Report the durations once, when the visitor leaves. Prefer sendBeacon so
+    // it survives the page unload; visibilitychange→hidden is the most reliable
+    // "leaving" signal across desktop and mobile.
+    let ended = false
+    const sendEnd = () => {
+      if (ended) return
+      ended = true
+      if (sceneEnterAt) {
+        sceneMs += Date.now() - sceneEnterAt
+        sceneEnterAt = null
+      }
+      const data = JSON.stringify({
+        event: 'session_end',
+        dwellMs: Date.now() - sessionStart,
+        sceneMs,
+        page: window.location.pathname,
+        isReturning,
+        visitCount,
+      })
+      try {
+        const blob = new Blob([data], { type: 'application/json' })
+        if (navigator.sendBeacon && navigator.sendBeacon('/api/notify-visit', blob)) return
+      } catch {
+        // sendBeacon unavailable — fall through to fetch.
+      }
+      fetch('/api/notify-visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data,
+        keepalive: true,
+      }).catch(() => {})
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') sendEnd()
+    }
+    window.addEventListener('pagehide', sendEnd)
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      window.removeEventListener('drivemode:on', onSceneOn)
+      window.removeEventListener('drivemode:off', onSceneOff)
+      window.removeEventListener('pagehide', sendEnd)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [])
 }
