@@ -13,10 +13,12 @@ import About from '@/components/About/About'
 import Skills from '@/components/Skills/Skills'
 import Achievements from '@/components/Achievements/Achievements'
 import Preloader from '@/components/Preloader/Preloader'
+import ExploreLauncher from '@/components/Explore3D/ExploreLauncher'
 
 const Timeline = lazy(() => import('@/components/Timeline/Timeline'))
 const AISection = lazy(() => import('@/components/AISection/AISection'))
 const Contact = lazy(() => import('@/components/Contact/Contact'))
+const Explore3D = lazy(() => import('@/components/Explore3D/Explore3D'))
 
 // Maps block ids (see themeConfig BLOCKS) to their components. Timeline /
 // AISection / Contact are lazy and rendered inside a shared Suspense boundary.
@@ -51,6 +53,7 @@ function Main() {
 
 function AppShell() {
   const [loaded, setLoaded] = useState(false)
+  const [drive, setDrive] = useState(false)
   useVisitNotification()
 
   return (
@@ -64,6 +67,22 @@ function AppShell() {
         {loaded && <Main />}
       </div>
       {loaded && <GameHUD />}
+      {loaded && (
+        <ExploreLauncher
+          onOpen={() => {
+            // Tear down the Hero WebGL context first (this flushes and unmounts
+            // its canvas), then mount Drive Mode on the next frame so the two
+            // contexts never coexist — that overlap was causing Context Lost.
+            window.dispatchEvent(new Event('drivemode:on'))
+            requestAnimationFrame(() => setDrive(true))
+          }}
+        />
+      )}
+      {drive && (
+        <Suspense fallback={null}>
+          <Explore3D onExit={() => setDrive(false)} />
+        </Suspense>
+      )}
     </div>
   )
 }

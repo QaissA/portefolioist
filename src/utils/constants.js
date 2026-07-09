@@ -115,6 +115,56 @@ export const EXPERIENCE = [
   },
 ]
 
+// Notable shipped work — drawn from the products/highlights in EXPERIENCE.
+// Used by the 3D Drive Mode "Projects" station.
+export const PROJECTS = [
+  {
+    id: 'elivret',
+    name: 'Elivret',
+    kind: 'Digital product · Angular 17',
+    company: 'Netopia',
+    description:
+      'Production Angular 17 platform with advanced NgRx state management and OnPush change detection for snappy, large-scale UIs.',
+    stack: ['Angular 17', 'NgRx', 'RxJS', 'TypeScript'],
+  },
+  {
+    id: 'passeport-maroc',
+    name: 'Passeport Maroc',
+    kind: 'Digital product · Angular 17',
+    company: 'Netopia',
+    description:
+      'Citizen-facing product built with reusable component architecture and store patterns adopted as the team standard across squads.',
+    stack: ['Angular 17', 'NgRx', 'Tailwind'],
+  },
+  {
+    id: 'saas-platform',
+    name: 'SaaS Platform',
+    kind: 'Web app · from scratch',
+    company: 'Mibtech',
+    description:
+      'Greenfield Angular SaaS launched with zero critical bugs, a reusable component library, and CI/CD quality gates via SonarQube.',
+    stack: ['Angular', 'CI/CD', 'SonarQube'],
+  },
+  {
+    id: 'mobile-app',
+    name: 'Flutter Mobile App',
+    kind: 'Mobile · 4.2★ on stores',
+    company: 'AtTime / Isicod',
+    description:
+      'Cross-platform Flutter app rated 4.2/5, backed by a web platform scaled to serve 2,000+ active users.',
+    stack: ['Flutter', 'Dart', 'Node.js'],
+  },
+  {
+    id: 'reporting-module',
+    name: 'Reporting Module',
+    kind: 'Fullstack feature',
+    company: 'DXC Technology',
+    description:
+      'Angular + Spring Boot reporting module with optimized PostgreSQL queries and 85%+ test coverage across Jest and Cypress.',
+    stack: ['Angular', 'Spring Boot', 'PostgreSQL'],
+  },
+]
+
 export const AI_FLOW_NODES = [
   { id: 'input', label: 'User Request', x: 50, y: 30, type: 'io' },
   { id: 'orchestrator', label: 'Orchestrator Agent', x: 50, y: 130, type: 'core' },
