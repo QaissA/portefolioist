@@ -126,7 +126,7 @@ export default function Timeline() {
             className="timeline-heading relative z-10 font-display font-bold text-text-primary"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
           >
-            3+ years of shipping <span className="text-amber">production software.</span>
+            5+ years of shipping <span className="text-amber">production software.</span>
           </h2>
         </div>
         <p className="timeline-heading text-text-secondary font-display max-w-xl text-sm">

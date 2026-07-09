@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react'
+import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -296,6 +296,20 @@ function Bubbles({ count = 11, onPop }) {
 
 // ─── Canvas wrapper — transparent, no envMap (lightweight, crash-safe) ─────
 export default function HeroScene({ onPop }) {
+  // Freeze this scene's render loop while the fullscreen Drive Mode is open so
+  // two heavy WebGL contexts don't compete for the GPU.
+  const [paused, setPaused] = useState(false)
+  useEffect(() => {
+    const on = () => setPaused(true)
+    const off = () => setPaused(false)
+    window.addEventListener('drivemode:on', on)
+    window.addEventListener('drivemode:off', off)
+    return () => {
+      window.removeEventListener('drivemode:on', on)
+      window.removeEventListener('drivemode:off', off)
+    }
+  }, [])
+
   return (
     <div
       className="absolute inset-0 pointer-events-none"
@@ -311,22 +325,26 @@ export default function HeroScene({ onPop }) {
         }}
       />
 
-      <Canvas
-        camera={{ position: [0, 0, 9], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
-        style={{ background: 'transparent' }}
-        onCreated={({ gl }) => {
-          // allow the browser to auto-restore a lost context instead of going blank
-          gl.domElement.addEventListener(
-            'webglcontextlost',
-            (e) => e.preventDefault(),
-            false,
-          )
-        }}
-      >
-        <Bubbles count={11} onPop={onPop} />
-      </Canvas>
+      {/* Unmount entirely (not just pause) while Drive Mode owns the GPU, so
+          this WebGL context is destroyed and only one context stays alive. */}
+      {!paused && (
+        <Canvas
+          camera={{ position: [0, 0, 9], fov: 50 }}
+          dpr={[1, 1.5]}
+          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+          style={{ background: 'transparent' }}
+          onCreated={({ gl }) => {
+            // allow the browser to auto-restore a lost context instead of going blank
+            gl.domElement.addEventListener(
+              'webglcontextlost',
+              (e) => e.preventDefault(),
+              false,
+            )
+          }}
+        >
+          <Bubbles count={11} onPop={onPop} />
+        </Canvas>
+      )}
 
       {/* faint grid overlay (kept for depth) */}
       <div
