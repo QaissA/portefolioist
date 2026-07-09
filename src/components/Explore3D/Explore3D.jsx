@@ -7,6 +7,8 @@ import Village from './Village'
 import Landscape from './Landscape'
 import ContentPanel from './ContentPanel'
 import Minimap from './Minimap'
+import GameLayer from './games/GameLayer'
+import GameHUD3D from './games/GameHUD3D'
 import { STATIONS } from './stations'
 
 // Read a "R G B" CSS custom property → "#rrggbb" so the 3D scene tracks the
@@ -30,7 +32,7 @@ function readThemeColors() {
   }
 }
 
-function Scene({ colors, onActiveChange, posRef, active }) {
+function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef }) {
   return (
     <>
       <color attach="background" args={['#bcdcef']} />
@@ -79,6 +81,7 @@ function Scene({ colors, onActiveChange, posRef, active }) {
 
       <Car bodyColor={colors.accent} onActiveChange={onActiveChange} posRef={posRef} />
       <Smoke poseRef={posRef} />
+      <GameLayer mode={mode} runId={runId} posRef={posRef} gameRef={gameRef} />
     </>
   )
 }
@@ -86,8 +89,11 @@ function Scene({ colors, onActiveChange, posRef, active }) {
 export default function Explore3D({ onExit }) {
   const [active, setActive] = useState(null)
   const [glKey, setGlKey] = useState(0) // bump to rebuild the canvas on a fresh context
+  const [mode, setMode] = useState('explore') // active arcade game
+  const [runId, setRunId] = useState(0) // bump to restart the current game
   const recoveries = useRef(0)
   const posRef = useRef({ x: 0, z: 16, heading: Math.PI })
+  const gameRef = useRef({ primary: '', secondary: '', flash: '', done: false })
   const colors = useMemo(() => readThemeColors(), [])
 
   // lock the page behind us while driving, and pause the background Hero
@@ -136,7 +142,15 @@ export default function Explore3D({ onExit }) {
           )
         }}
       >
-        <Scene colors={colors} onActiveChange={setActive} posRef={posRef} active={active} />
+        <Scene
+          colors={colors}
+          onActiveChange={setActive}
+          posRef={posRef}
+          active={active}
+          mode={mode}
+          runId={runId}
+          gameRef={gameRef}
+        />
       </Canvas>
 
       {/* ── HUD ─────────────────────────────────────────────── */}
@@ -158,7 +172,10 @@ export default function Explore3D({ onExit }) {
 
       <Minimap posRef={posRef} active={active} />
 
-      <ContentPanel active={active} />
+      <GameHUD3D mode={mode} setMode={setMode} runId={runId} setRunId={setRunId} gameRef={gameRef} />
+
+      {/* villages' content panels only in free-roam, so games stay uncluttered */}
+      <ContentPanel active={mode === 'explore' ? active : null} />
 
       {/* controls hint — fades once the driver reaches the first station */}
       <div

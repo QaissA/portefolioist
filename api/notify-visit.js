@@ -11,6 +11,17 @@ function esc(v) {
     .replace(/'/g, '&#39;')
 }
 
+// Human-friendly duration from milliseconds: "45s", "4m 12s", "1h 3m".
+function fmtDuration(ms) {
+  const total = Math.max(0, Math.round(ms / 1000))
+  if (total < 60) return `${total}s`
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  if (m < 60) return s ? `${m}m ${s}s` : `${m}m`
+  const h = Math.floor(m / 60)
+  return `${h}h ${m % 60}m`
+}
+
 // Turn a 2-letter ISO country code into its flag emoji (e.g. "MA" -> 🇲🇦).
 function flag(code) {
   if (!/^[A-Za-z]{2}$/.test(code)) return ''
@@ -115,6 +126,13 @@ export default async function handler(req, res) {
   const isReturning = body.isReturning === true
   const visitCount = body.visitCount || 'unknown'
 
+  // --- Session timing (only present on the "visit ended" beacon) ---
+  const isSessionEnd = body.event === 'session_end'
+  const dwellMs = Number(body.dwellMs) || 0
+  const sceneMs = Number(body.sceneMs) || 0
+  const dwellLabel = isSessionEnd ? fmtDuration(dwellMs) : ''
+  const sceneLabel = isSessionEnd && sceneMs > 0 ? fmtDuration(sceneMs) : ''
+
   // Parse UTM / campaign params out of the query string, if any.
   const utm = {}
   try {
@@ -167,6 +185,8 @@ export default async function handler(req, res) {
     ``,
     `Visitor:    ${visitorType}`,
     `Time:       ${whenPretty}`,
+    dwellLabel ? `On site:    ${dwellLabel}` : null,
+    sceneLabel ? `In 3D:      ${sceneLabel}` : null,
     `Local time: ${localTime}`,
     `Page:       ${page}`,
     `URL:        ${url}`,
@@ -195,6 +215,8 @@ export default async function handler(req, res) {
   // are dropped so we never show blank fields.
   const rows = [
     ['👤', 'Visitor', visitorType],
+    ['⏱️', 'Time on site', dwellLabel],
+    ['🏎️', 'Time in 3D scene', sceneLabel],
     ['🌍', 'Location', locationLabel, mapsUrl],
     ['📍', 'Coordinates', lat && lng ? `${lat}, ${lng}` : ''],
     ['🔗', 'Referrer', referrer],
@@ -252,10 +274,10 @@ export default async function handler(req, res) {
           <tr>
             <td style="padding:28px 28px 22px 28px;background:linear-gradient(135deg,#6d5efc 0%,#4c8dff 100%);">
               <div style="font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);font-weight:600;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-                Portfolio Alert
+                ${isSessionEnd ? 'Session Summary' : 'Portfolio Alert'}
               </div>
               <div style="font-size:24px;line-height:1.25;margin-top:6px;color:#ffffff;font-weight:700;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-                👀 New visitor just landed
+                ${isSessionEnd ? '⏱️ Visit ended' : '👀 New visitor just landed'}
               </div>
               <div style="font-size:13px;margin-top:8px;color:rgba(255,255,255,0.85);font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
                 ${esc(whenPretty)}
@@ -300,7 +322,9 @@ export default async function handler(req, res) {
         to,
         subject: isBot
           ? `🤖 Bot visit — ${locationLabel}`
-          : `👀 New${isReturning ? ' (returning)' : ''} portfolio visit — ${locationLabel}`,
+          : isSessionEnd
+            ? `⏱️ Visit ended (${dwellLabel}${sceneLabel ? `, ${sceneLabel} in 3D` : ''}) — ${locationLabel}`
+            : `👀 New${isReturning ? ' (returning)' : ''} portfolio visit — ${locationLabel}`,
         html,
         text,
       }),

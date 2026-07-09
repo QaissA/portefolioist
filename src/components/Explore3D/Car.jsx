@@ -117,8 +117,9 @@ export default function Car({ bodyColor, onActiveChange, posRef }) {
     }
     camera.lookAt(s.x, 1.4, s.z)
 
-    // share pose (+ drift flag) with the minimap and smoke emitter
-    if (posRef) posRef.current = { x: s.x, z: s.z, heading: s.heading, drifting }
+    // share pose (+ drift flag + forward speed) with the minimap, smoke
+    // emitter, and the arcade games
+    if (posRef) posRef.current = { x: s.x, z: s.z, heading: s.heading, drifting, speed: vForward }
 
     // proximity — nearest station within ARRIVE_RADIUS, reported only on change
     let nearest = null
