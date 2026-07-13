@@ -62,6 +62,10 @@ export default function GameHUD3D({ mode, setMode, runId, setRunId, gameRef }) {
             <span className="hidden sm:inline">{m.label}</span>
           </button>
         ))}
+        <span className="ml-1 hidden items-center gap-1 pr-2 font-mono text-[10px] text-text-muted sm:flex">
+          <kbd className="rounded border border-border px-1 py-0.5">TAB</kbd>
+          switch
+        </span>
       </div>
 
       {/* score / timer readout */}

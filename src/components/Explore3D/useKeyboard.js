@@ -20,6 +20,9 @@ export function useKeyboard() {
 
   useEffect(() => {
     const down = (e) => {
+      // don't hijack keys while the player is typing (e.g. the name field)
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return
       const intent = KEY_MAP[e.code]
       if (!intent) return
       keys.current[intent] = true

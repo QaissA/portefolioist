@@ -7,9 +7,12 @@ import Village from './Village'
 import Landscape from './Landscape'
 import ContentPanel from './ContentPanel'
 import Minimap from './Minimap'
+import RemotePlayers from './RemotePlayers'
 import GameLayer from './games/GameLayer'
 import GameHUD3D from './games/GameHUD3D'
+import { useMultiplayer } from '@/hooks/useMultiplayer'
 import { STATIONS } from './stations'
+import { GAME_MODES } from './games/gameModes'
 
 // Read a "R G B" CSS custom property → "#rrggbb" so the 3D scene tracks the
 // active theme (amber / neon / bubblegum …).
@@ -19,6 +22,14 @@ function cssHex(name, fallback) {
   const parts = raw.split(/\s+/).map(Number)
   if (parts.length < 3 || parts.some(Number.isNaN)) return fallback
   return '#' + parts.slice(0, 3).map((c) => Math.max(0, Math.min(255, c)).toString(16).padStart(2, '0')).join('')
+}
+
+function loadName() {
+  try {
+    return localStorage.getItem('drive:name') || ''
+  } catch {
+    return ''
+  }
 }
 
 function readThemeColors() {
@@ -32,7 +43,7 @@ function readThemeColors() {
   }
 }
 
-function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef }) {
+function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef, peersRef }) {
   return (
     <>
       <color attach="background" args={['#bcdcef']} />
@@ -81,6 +92,7 @@ function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef })
 
       <Car bodyColor={colors.accent} onActiveChange={onActiveChange} posRef={posRef} />
       <Smoke poseRef={posRef} />
+      <RemotePlayers peersRef={peersRef} />
       <GameLayer mode={mode} runId={runId} posRef={posRef} gameRef={gameRef} />
     </>
   )
@@ -96,6 +108,22 @@ export default function Explore3D({ onExit }) {
   const gameRef = useRef({ primary: '', secondary: '', flash: '', done: false })
   const colors = useMemo(() => readThemeColors(), [])
 
+  // --- Multiplayer (peer-to-peer, no backend) ---
+  const [name, setName] = useState(loadName)
+  const nameRef = useRef(name)
+  useEffect(() => {
+    nameRef.current = name
+  }, [name])
+  const { peersRef, count } = useMultiplayer(posRef, nameRef)
+  const onName = (v) => {
+    setName(v)
+    try {
+      localStorage.setItem('drive:name', v)
+    } catch {
+      /* ignore */
+    }
+  }
+
   // lock the page behind us while driving, and pause the background Hero
   // WebGL scene so two heavy 3D contexts don't fight over the GPU (which was
   // causing "Context Lost").
@@ -109,17 +137,34 @@ export default function Explore3D({ onExit }) {
     }
   }, [])
 
-  // Esc leaves the scene
+  // Esc leaves the scene; Tab cycles through the arcade games (Shift+Tab back)
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') onExit()
+      // don't hijack keys while the player is typing (e.g. the name field)
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return
+
+      if (e.key === 'Escape') {
+        onExit()
+        return
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault() // keep Tab from moving focus through the HUD buttons
+        const dir = e.shiftKey ? -1 : 1
+        setMode((cur) => {
+          const i = GAME_MODES.findIndex((m) => m.id === cur)
+          const next = GAME_MODES[(i + dir + GAME_MODES.length) % GAME_MODES.length]
+          return next.id
+        })
+        setRunId((n) => n + 1) // fresh run of the newly selected game
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onExit])
 
   return (
-    <div className="fixed inset-0 z-[10000]" style={{ background: '#bcdcef' }}>
+    <div className="fixed inset-0 z-[10000]" style={{ background: '#bcdcef', cursor: 'auto' }}>
       <Canvas
         key={glKey}
         dpr={[1, 1.5]}
@@ -150,6 +195,7 @@ export default function Explore3D({ onExit }) {
           mode={mode}
           runId={runId}
           gameRef={gameRef}
+          peersRef={peersRef}
         />
       </Canvas>
 
@@ -168,6 +214,20 @@ export default function Explore3D({ onExit }) {
           EXIT
           <kbd className="rounded border border-border px-1 py-0.5 text-[10px] text-text-muted">ESC</kbd>
         </button>
+
+        {/* multiplayer: live online count + editable handle */}
+        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-surface/85 px-3 py-2 backdrop-blur">
+          <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_6px_#4ade80]" />
+          <span className="font-mono text-xs text-text-secondary">
+            {count} online
+          </span>
+        </div>
+        <input
+          value={name}
+          onChange={(e) => onName(e.target.value.slice(0, 16))}
+          placeholder="your name"
+          className="pointer-events-auto w-28 rounded-full border border-border bg-surface/85 px-3 py-2 font-mono text-xs text-text-primary placeholder:text-text-muted backdrop-blur focus:border-amber/60 focus:outline-none"
+        />
       </div>
 
       <Minimap posRef={posRef} active={active} />
