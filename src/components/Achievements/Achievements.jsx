@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
-import { ACHIEVEMENTS } from '@/utils/constants'
+import { ACHIEVEMENTS, CONTENT } from '@/utils/constants'
 import MetricCard from './MetricCard'
 import SectionNumber from '@/components/UI/SectionNumber'
 
@@ -30,18 +30,18 @@ export default function Achievements() {
 
   return (
     <section id="achievements" ref={sectionRef} className="px-8 py-24">
-      <p className="section-label achievements-heading mb-4">// 03 Impact & Numbers</p>
+      <p className="section-label achievements-heading mb-4">{CONTENT.achievements.label}</p>
       <div className="relative mb-4">
         <SectionNumber num="03" />
         <h2
           className="achievements-heading relative z-10 font-display font-bold text-text-primary"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
         >
-          Results that speak <span className="text-amber">louder than claims.</span>
+          {CONTENT.achievements.headingLead} <span className="text-amber">{CONTENT.achievements.headingAccent}</span>
         </h2>
       </div>
       <p className="achievements-heading text-text-secondary font-display mb-16 max-w-xl">
-        Every number represents a real project, a real team, and a real problem solved.
+        {CONTENT.achievements.description}
       </p>
 
       <div className="metrics-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

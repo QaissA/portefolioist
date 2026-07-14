@@ -1,5 +1,8 @@
 import { useEffect } from 'react'
 import { useGame, GAME_IDS, GAME_META } from '@/game/GameContext'
+import { CONTENT } from '@/utils/constants'
+
+const PLAY = CONTENT.playMode
 
 export default function GameHUD() {
   const {
@@ -36,7 +39,7 @@ export default function GameHUD() {
           className="group flex items-center gap-2 bg-surface/90 backdrop-blur border border-border hover:border-amber/60 rounded-full pl-3 pr-4 py-2 text-xs text-text-secondary hover:text-text-primary transition-colors duration-200"
         >
           <span className="text-amber">▶</span>
-          <span className="tracking-wide">PLAY MODE</span>
+          <span className="tracking-wide">{PLAY.launcher}</span>
           <kbd className="text-[10px] text-text-muted border border-border rounded px-1 py-0.5 group-hover:border-amber/40">
             G
           </kbd>
@@ -48,13 +51,13 @@ export default function GameHUD() {
         // expanded terminal panel
         <div className="w-64 bg-surface/95 backdrop-blur border border-amber/30 rounded-xl overflow-hidden shadow-2xl shadow-black/50">
           <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-surface-2">
-            <span className="text-[11px] text-amber tracking-wider">{'> dev_quest'}</span>
+            <span className="text-[11px] text-amber tracking-wider">{PLAY.title}</span>
             <button
               onClick={togglePlayMode}
               className="text-[10px] text-text-muted hover:text-text-primary transition-colors"
               aria-label="Exit play mode"
             >
-              EXIT [G] ✕
+              {PLAY.exit}
             </button>
           </div>
 
@@ -93,12 +96,12 @@ export default function GameHUD() {
 
             {allDone && (
               <div className="mt-3 text-center text-[11px] text-amber border border-amber/40 rounded-lg py-2 animate-pulse">
-                ALL SYSTEMS GREEN ▰ finale unlocked
+                {PLAY.allDoneBanner}
               </div>
             )}
 
             <p className="mt-3 text-[9px] leading-relaxed text-text-muted">
-              Scroll to each section and play. Press <span className="text-amber">G</span> to exit.
+              {PLAY.hint}
             </p>
           </div>
         </div>

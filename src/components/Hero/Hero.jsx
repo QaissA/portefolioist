@@ -3,7 +3,7 @@ import SplitType from 'split-type'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { useMagnet } from '@/hooks/useMagnet'
-import { PERSONAL } from '@/utils/constants'
+import { PERSONAL, CONTENT } from '@/utils/constants'
 import HeroParallaxText from './HeroParallaxText'
 import { useBubbleGame, BubbleGameHUD } from './HeroBubbleGame'
 
@@ -123,7 +123,7 @@ export default function Hero() {
       >
         <div className="max-w-5xl">
           <p className="section-label mb-6 tracking-[0.2em]">
-            // Available for freelance — Rabat, Morocco
+            {CONTENT.hero.availability}
           </p>
 
           <h1
@@ -157,7 +157,7 @@ export default function Hero() {
               data-cursor="MAIL"
               className="inline-flex items-center gap-2 bg-amber text-background font-display font-semibold px-8 py-4 rounded-full text-sm tracking-wide hover:bg-amber/90 transition-colors duration-200"
             >
-              Let's work together
+              {CONTENT.hero.ctaPrimary}
               <span className="text-lg">→</span>
             </a>
             <button
@@ -166,7 +166,7 @@ export default function Hero() {
               onClick={() => document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' })}
               className="inline-flex items-center gap-2 border border-border text-text-secondary font-mono text-sm px-8 py-4 rounded-full hover:border-amber/50 hover:text-text-primary transition-colors duration-200"
             >
-              View my work
+              {CONTENT.hero.ctaSecondary}
             </button>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function Hero() {
               style={{ marginLeft: '1px' }}
             />
           </div>
-          scroll
+          {CONTENT.hero.scrollHint}
         </div>
       </div>
     </section>

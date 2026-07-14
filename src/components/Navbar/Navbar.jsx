@@ -1,17 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/utils/gsapConfig'
-import { PERSONAL } from '@/utils/constants'
+import { PERSONAL, CONTENT } from '@/utils/constants'
 import { useTheme } from '@/theme/ThemeContext'
 
-const SECTIONS = [
-  { id: 'hero', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'achievements', label: 'Impact' },
-  { id: 'timeline', label: 'Experience' },
-  { id: 'ai-section', label: 'AI Engineering' },
-  { id: 'contact', label: 'Contact' },
-]
+const SECTIONS = CONTENT.nav.sections
 
 export default function Navbar() {
   const navRef = useRef(null)
@@ -60,9 +52,9 @@ export default function Navbar() {
       <button
         onClick={() => scrollTo('hero')}
         className="font-mono text-amber font-medium text-lg tracking-widest"
-        aria-label="Back to top"
+        aria-label={CONTENT.nav.backToTop}
       >
-        QA
+        {CONTENT.nav.logo}
       </button>
 
       <div className="hidden md:flex items-center gap-1">
@@ -91,7 +83,7 @@ export default function Navbar() {
         href={`mailto:${PERSONAL.email}`}
         className="hidden md:block font-mono text-xs border border-amber/40 text-amber px-4 py-2 rounded-full hover:bg-amber/10 transition-colors duration-200"
       >
-        Hire me
+        {CONTENT.nav.hireCta}
       </a>
     </nav>
   )

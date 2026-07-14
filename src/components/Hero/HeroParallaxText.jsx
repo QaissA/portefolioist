@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
+import { CONTENT } from '@/utils/constants'
 
 export default function HeroParallaxText({ sectionRef }) {
   const textRef = useRef(null)
@@ -35,7 +36,7 @@ export default function HeroParallaxText({ sectionRef }) {
           lineHeight: 1,
         }}
       >
-        FULL·STACK
+        {CONTENT.hero.parallaxWord}
       </span>
     </div>
   )

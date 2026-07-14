@@ -2,19 +2,17 @@ import { useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { useMagnet } from '@/hooks/useMagnet'
-import { PERSONAL } from '@/utils/constants'
+import { PERSONAL, CONTENT } from '@/utils/constants'
 import { FiGithub, FiLinkedin, FiMail, FiArrowUpRight } from 'react-icons/fi'
 import { useScrambleText } from '@/hooks/useScrambleText'
 import SectionNumber from '@/components/UI/SectionNumber'
 import { useGame } from '@/game/GameContext'
 
 const FINALE_MAILTO = `mailto:${PERSONAL.email}?subject=${encodeURIComponent(
-  'I beat your Dev Quest 🎮',
-)}&body=${encodeURIComponent(
-  "Hey Qaiss — I played through every section of your portfolio. Let's talk.",
-)}`
+  CONTENT.contact.finale.mailSubject,
+)}&body=${encodeURIComponent(CONTENT.contact.finale.mailBody)}`
 
-const MARQUEE_TEXT = "LET'S WORK · AVAILABLE NOW · LET'S WORK · AVAILABLE NOW · "
+const MARQUEE_TEXT = CONTENT.contact.marqueeText
 
 export default function Contact() {
   const sectionRef = useRef(null)
@@ -22,7 +20,7 @@ export default function Contact() {
   const magnetGh = useMagnet(0.5)
   const magnetLi = useMagnet(0.5)
   const magnetMail = useMagnet(0.5)
-  const scrambleRef = useScrambleText("LET'S BUILD")
+  const scrambleRef = useScrambleText(CONTENT.contact.scramble)
   const { allDone, level } = useGame()
 
   useGSAP(() => {
@@ -69,7 +67,7 @@ export default function Contact() {
         <div className="contact-block">
           {/* Section label */}
           <p className="section-label mb-6">
-            // 06 <span ref={scrambleRef} />
+            {CONTENT.contact.labelPrefix}<span ref={scrambleRef} />
           </p>
 
           {/* Heading with section number */}
@@ -79,13 +77,13 @@ export default function Contact() {
               className="relative z-10 font-display font-bold text-text-primary"
               style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', letterSpacing: '-0.03em', lineHeight: 1.05, paddingTop: '0.1em' }}
             >
-              Ready when <span className="text-amber">you are.</span>
+              {CONTENT.contact.headingLead} <span className="text-amber">{CONTENT.contact.headingAccent}</span>
             </h2>
           </div>
 
           {/* Large email display */}
           <div className="mb-12">
-            <p className="font-mono text-text-muted text-xs mb-2">// reach me at</p>
+            <p className="font-mono text-text-muted text-xs mb-2">{CONTENT.contact.emailLabel}</p>
             <a
               href={`mailto:${PERSONAL.email}`}
               className="block font-display font-bold text-text-primary hover:text-amber transition-colors duration-300"
@@ -109,7 +107,7 @@ export default function Contact() {
               style={{ borderRadius: '100px' }}
             >
               <FiMail className="text-xl" aria-hidden="true" />
-              Start a Conversation
+              {CONTENT.contact.cta}
               <FiArrowUpRight className="text-xl" aria-hidden="true" />
             </a>
           </div>
@@ -118,21 +116,19 @@ export default function Contact() {
           {allDone && (
             <div className="mb-16 rounded-2xl border border-skill-backend/40 bg-skill-backend/5 p-6 sm:p-8 font-mono">
               <p className="text-skill-backend text-xs tracking-wider mb-3">
-                {'> dev_quest --status'}
+                {CONTENT.contact.finale.statusCommand}
               </p>
               <p className="text-skill-backend text-sm mb-4">
-                ✓ ALL SYSTEMS GREEN — Dev Quest complete (LVL {level})
+                {CONTENT.contact.finale.statusLine.replace('{level}', level)}
               </p>
               <p className="font-display text-text-secondary text-sm sm:text-base leading-relaxed mb-6 max-w-xl">
-                You explored every corner and cleared all four challenges. That curiosity is
-                exactly what I bring to engineering. Here&apos;s a fast-track to my inbox —
-                subject line&apos;s already written.
+                {CONTENT.contact.finale.body}
               </p>
               <a
                 href={FINALE_MAILTO}
                 className="inline-flex items-center gap-2 bg-skill-backend text-background font-display font-semibold px-6 py-3 rounded-full text-sm hover:opacity-90 transition-opacity"
               >
-                Claim your reply
+                {CONTENT.contact.finale.cta}
                 <FiArrowUpRight className="text-base" aria-hidden="true" />
               </a>
             </div>
@@ -141,7 +137,7 @@ export default function Contact() {
           {/* Footer row */}
           <div className="flex flex-wrap items-center justify-between gap-6 pt-8 border-t border-border/50">
             <p className="font-mono text-text-muted text-xs">
-              Designed & Engineered by {PERSONAL.name} · 2025
+              {CONTENT.contact.footer.replace('{name}', PERSONAL.name)}
             </p>
             <div className="flex items-center gap-4">
               <a

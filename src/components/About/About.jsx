@@ -2,21 +2,17 @@ import { useRef } from 'react'
 import SplitType from 'split-type'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
-import { PERSONAL } from '@/utils/constants'
+import { PERSONAL, CONTENT } from '@/utils/constants'
 import Marquee from './Marquee'
 import SectionNumber from '@/components/UI/SectionNumber'
 import { useScrambleText } from '@/hooks/useScrambleText'
 
-const STATS = [
-  { value: '3+', label: 'Years of Production Engineering' },
-  { value: 'Fullstack', label: 'Angular · Node.js · Flutter' },
-  { value: 'AI-First', label: 'Augmented Engineering Workflows' },
-]
+const STATS = CONTENT.about.stats
 
 export default function About() {
   const sectionRef = useRef(null)
   const bioRef = useRef(null)
-  const scrambleRef = useScrambleText('ENGINEERING WITH INTENT')
+  const scrambleRef = useScrambleText(CONTENT.about.scramble)
 
   useGSAP(() => {
     const split = new SplitType(bioRef.current, { types: 'words' })
@@ -57,7 +53,7 @@ export default function About() {
   return (
     <section id="about" ref={sectionRef} className="px-8 py-24">
       <p className="section-label about-label mb-6">
-        // 01 About — <span ref={scrambleRef} className="text-text-muted" />
+        {CONTENT.about.labelPrefix}<span ref={scrambleRef} className="text-text-muted" />
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -69,8 +65,8 @@ export default function About() {
               style={{ paddingTop: '0.1em' }}
               style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', lineHeight: 1.1 }}
             >
-              Engineering with intent.<br />
-              <span className="text-amber">Shipping with precision.</span>
+              {CONTENT.about.headingLine1}<br />
+              <span className="text-amber">{CONTENT.about.headingLine2}</span>
             </h2>
           </div>
           <p ref={bioRef} className="text-text-secondary font-display leading-relaxed text-lg">

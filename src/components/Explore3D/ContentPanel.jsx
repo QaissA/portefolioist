@@ -1,13 +1,8 @@
-import { PERSONAL, SKILLS, EXPERIENCE, ACHIEVEMENTS, PROJECTS } from '@/utils/constants'
+import { PERSONAL, SKILLS, EXPERIENCE, ACHIEVEMENTS, PROJECTS, CONTENT } from '@/utils/constants'
 import { STATIONS } from './stations'
 
-const SKILL_GROUPS = [
-  { key: 'frontend', label: 'Frontend' },
-  { key: 'backend', label: 'Backend' },
-  { key: 'mobile', label: 'Mobile' },
-  { key: 'ai', label: 'AI' },
-  { key: 'devops', label: 'DevOps' },
-]
+const PANEL = CONTENT.driveMode.contentPanel
+const SKILL_GROUPS = PANEL.skillGroups
 
 function Chip({ children, color }) {
   return (
@@ -59,9 +54,9 @@ function ImpactBody({ color }) {
     <>
       <div className="mb-4 flex items-baseline gap-2">
         <span className="font-display text-5xl font-bold" style={{ color }}>
-          5+
+          {PANEL.impactHeadline}
         </span>
-        <span className="font-mono text-sm text-text-secondary">years shipping production software</span>
+        <span className="font-mono text-sm text-text-secondary">{PANEL.impactCaption}</span>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {ACHIEVEMENTS.map((a) => (
@@ -91,7 +86,7 @@ function WorkBody({ color }) {
                 className="rounded-full border px-2 py-0.5 font-mono text-[9px]"
                 style={{ borderColor: color, color }}
               >
-                Current
+                {PANEL.currentBadge}
               </span>
             )}
           </div>

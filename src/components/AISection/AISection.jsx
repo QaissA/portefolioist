@@ -2,28 +2,12 @@ import { useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
 import { useGame } from '@/game/GameContext'
+import { CONTENT } from '@/utils/constants'
 import AgentFlowDiagram from './AgentFlowDiagram'
 import AIRouteGame from './AIRouteGame'
 import SectionNumber from '@/components/UI/SectionNumber'
 
-const CAPABILITIES = [
-  {
-    title: 'Multi-Agent Orchestration',
-    desc: 'I design and supervise multi-agent workflows where specialized AI agents handle distinct tasks — research, generation, validation — orchestrated by a central controller I architect.',
-  },
-  {
-    title: 'TDD Acceleration',
-    desc: 'AI-assisted test-driven development: generate test scaffolding, edge cases, and mocks in seconds. Then I review, refine, and own the quality bar.',
-  },
-  {
-    title: 'Auto-Documentation',
-    desc: 'Reduce onboarding time by 50% using AI agents that generate accurate technical documentation from codebases, architecture diagrams, and PR history.',
-  },
-  {
-    title: 'Prompt Engineering',
-    desc: 'Precision prompting that extracts production-quality output. I treat prompts as code: versioned, tested, optimized for consistency across generations.',
-  },
-]
+const CAPABILITIES = CONTENT.ai.capabilities
 
 export default function AISection() {
   const sectionRef = useRef(null)
@@ -62,18 +46,18 @@ export default function AISection() {
       ref={sectionRef}
       className="px-8 py-24"
     >
-      <p className="section-label ai-heading mb-4">// 05 AI Engineering</p>
+      <p className="section-label ai-heading mb-4">{CONTENT.ai.label}</p>
       <div className="relative mb-4">
         <SectionNumber num="05" />
         <h2
           className="ai-heading relative z-10 font-display font-bold text-text-primary"
           style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
         >
-          Not autocomplete. <span className="text-amber">Orchestrated intelligence.</span>
+          {CONTENT.ai.headingLead} <span className="text-amber">{CONTENT.ai.headingAccent}</span>
         </h2>
       </div>
       <p className="ai-heading text-text-secondary font-display mb-16 max-w-2xl">
-        I use AI the way an architect uses structural analysis — as a precision tool I understand deeply, supervise carefully, and deploy strategically. The result: faster delivery without sacrificing quality or ownership.
+        {CONTENT.ai.description}
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -93,9 +77,9 @@ export default function AISection() {
           </div>
 
           <div className="mt-12 p-6 bg-surface border border-amber/20 rounded-2xl">
-            <p className="font-mono text-text-muted text-xs mb-3">// Stack</p>
+            <p className="font-mono text-text-muted text-xs mb-3">{CONTENT.ai.stackLabel}</p>
             <div className="flex flex-wrap gap-2">
-              {['Claude AI', 'MCP Protocol', 'GitHub Copilot', 'Cursor', 'Prompt Engineering', 'Agent Workflows'].map((t) => (
+              {CONTENT.ai.stack.map((t) => (
                 <span
                   key={t}
                   className="font-mono text-xs border border-amber/30 text-amber px-3 py-1 rounded-full"
@@ -109,7 +93,7 @@ export default function AISection() {
 
         <div className="ai-diagram-wrap hidden md:block">
           <p className="section-label text-center mb-6">
-            {playMode ? '// Route the Prompt' : '// Agent Orchestration Flow'}
+            {playMode ? CONTENT.ai.diagramGameLabel : CONTENT.ai.diagramLabel}
           </p>
           <div className="bg-surface border border-border/50 rounded-2xl p-6">
             {playMode ? <AIRouteGame /> : <AgentFlowDiagram />}

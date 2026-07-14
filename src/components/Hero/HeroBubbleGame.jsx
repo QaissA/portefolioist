@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useGame } from '@/game/GameContext'
+import { CONTENT } from '@/utils/constants'
 
+const BG = CONTENT.playMode.bubbleGame
 const GAME_TIME = 20 // seconds
 
 // Hook owns the bubble-pop game state. Hero passes `onPop` into the R3F scene
@@ -75,7 +77,7 @@ export function BubbleGameHUD({ playMode, running, finished, score, combo, timeL
     <div className="absolute top-24 right-8 z-20 font-mono pointer-events-auto select-none">
       <div className="w-56 bg-surface/95 backdrop-blur border border-amber/30 rounded-xl p-4 shadow-2xl shadow-black/50">
         <div className="flex items-center justify-between text-[11px] mb-3">
-          <span className="text-amber tracking-wider">{'> bubble_burst'}</span>
+          <span className="text-amber tracking-wider">{BG.title}</span>
           {running && <span className="text-text-primary">{timeLeft}s</span>}
         </div>
 
@@ -83,20 +85,19 @@ export function BubbleGameHUD({ playMode, running, finished, score, combo, timeL
           <>
             {finished ? (
               <div className="text-center mb-3">
-                <p className="text-[11px] text-text-secondary">Final score</p>
+                <p className="text-[11px] text-text-secondary">{BG.finalScoreLabel}</p>
                 <p className="text-3xl text-amber font-bold">{score}</p>
               </div>
             ) : (
               <p className="text-[11px] text-text-secondary leading-relaxed mb-3">
-                Pop as many bubbles as you can in {GAME_TIME}s. Chain pops for combo
-                multipliers.
+                {BG.instructions.replace('{time}', GAME_TIME)}
               </p>
             )}
             <button
               onClick={start}
               className="w-full bg-amber text-background text-xs font-semibold rounded-full py-2 hover:bg-amber/90 transition-colors"
             >
-              {finished ? 'Play again' : 'Start'}
+              {finished ? BG.playAgain : BG.start}
             </button>
           </>
         )}
@@ -104,12 +105,12 @@ export function BubbleGameHUD({ playMode, running, finished, score, combo, timeL
         {running && (
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[10px] text-text-muted">SCORE</p>
+              <p className="text-[10px] text-text-muted">{BG.scoreLabel}</p>
               <p className="text-2xl text-text-primary font-bold leading-none">{score}</p>
             </div>
             {combo > 1 && (
               <div className="text-right">
-                <p className="text-[10px] text-text-muted">COMBO</p>
+                <p className="text-[10px] text-text-muted">{BG.comboLabel}</p>
                 <p className="text-xl text-amber font-bold leading-none">×{combo}</p>
               </div>
             )}

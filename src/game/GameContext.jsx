@@ -1,14 +1,10 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
+import { CONTENT } from '@/utils/constants'
 
 // The four section games that make up "Dev Quest"
 export const GAME_IDS = ['hero', 'skills', 'ai', 'timeline']
 
-export const GAME_META = {
-  hero: { label: 'Bubble Burst', section: 'Hero' },
-  skills: { label: 'Stack Sorter', section: 'Skills' },
-  ai: { label: 'Prompt Router', section: 'AI' },
-  timeline: { label: 'Career Sort', section: 'Timeline' },
-}
+export const GAME_META = CONTENT.playMode.games
 
 const STORAGE_KEY = 'devquest:v1'
 

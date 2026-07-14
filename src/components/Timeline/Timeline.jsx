@@ -1,7 +1,7 @@
 import { useRef, useLayoutEffect } from 'react'
 import { gsap, ScrollTrigger } from '@/utils/gsapConfig'
 import { useGSAP } from '@/hooks/useGSAP'
-import { EXPERIENCE } from '@/utils/constants'
+import { EXPERIENCE, CONTENT } from '@/utils/constants'
 import SectionNumber from '@/components/UI/SectionNumber'
 import { useScrambleText } from '@/hooks/useScrambleText'
 import { useGame } from '@/game/GameContext'
@@ -21,7 +21,7 @@ function TimelineCardH({ company, role, period, location, highlights, current, i
         <span className="font-mono text-text-muted text-xs">{String(index + 1).padStart(2, '0')}</span>
         {current && (
           <span className="font-mono text-[10px] bg-amber/10 text-amber border border-amber/30 px-2 py-0.5 rounded-full">
-            Current
+            {CONTENT.timeline.currentBadge}
           </span>
         )}
       </div>
@@ -49,7 +49,7 @@ function TimelineCardH({ company, role, period, location, highlights, current, i
 export default function Timeline() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
-  const scrambleRef = useScrambleText('EXPERIENCE')
+  const scrambleRef = useScrambleText(CONTENT.timeline.scramble)
   const { playMode } = useGame()
 
   useGSAP(() => {
@@ -118,7 +118,7 @@ export default function Timeline() {
       {/* Header — pinned at top inside the section */}
       <div className="px-8 pt-24 pb-10">
         <p className="section-label timeline-heading mb-4">
-          // 04 <span ref={scrambleRef} />
+          {CONTENT.timeline.labelPrefix}<span ref={scrambleRef} />
         </p>
         <div className="relative mb-2">
           <SectionNumber num="04" />
@@ -126,11 +126,11 @@ export default function Timeline() {
             className="timeline-heading relative z-10 font-display font-bold text-text-primary"
             style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', letterSpacing: '-0.02em', paddingTop: '0.1em' }}
           >
-            5+ years of shipping <span className="text-amber">production software.</span>
+            {CONTENT.timeline.headingLead} <span className="text-amber">{CONTENT.timeline.headingAccent}</span>
           </h2>
         </div>
         <p className="timeline-heading text-text-secondary font-display max-w-xl text-sm">
-          Drag or scroll to explore — fullstack engineering across web and mobile.
+          {CONTENT.timeline.description}
         </p>
       </div>
 

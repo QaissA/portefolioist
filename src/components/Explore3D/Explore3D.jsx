@@ -13,6 +13,9 @@ import GameHUD3D from './games/GameHUD3D'
 import { useMultiplayer } from '@/hooks/useMultiplayer'
 import { STATIONS } from './stations'
 import { GAME_MODES } from './games/gameModes'
+import { CONTENT } from '@/utils/constants'
+
+const DRIVE = CONTENT.driveMode
 
 // Read a "R G B" CSS custom property → "#rrggbb" so the 3D scene tracks the
 // active theme (amber / neon / bubblegum …).
@@ -205,13 +208,13 @@ export default function Explore3D({ onExit }) {
       <div className="pointer-events-none fixed left-4 top-4 z-[10020] flex items-center gap-3">
         <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-surface/85 px-4 py-2 backdrop-blur">
           <span className="text-amber">◈</span>
-          <span className="font-mono text-xs tracking-wide text-text-primary">DRIVE MODE</span>
+          <span className="font-mono text-xs tracking-wide text-text-primary">{DRIVE.title}</span>
         </div>
         <button
           onClick={onExit}
           className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-surface/85 px-4 py-2 font-mono text-xs text-text-secondary backdrop-blur transition-colors hover:border-amber/60 hover:text-text-primary"
         >
-          EXIT
+          {DRIVE.exit}
           <kbd className="rounded border border-border px-1 py-0.5 text-[10px] text-text-muted">ESC</kbd>
         </button>
 
@@ -219,13 +222,13 @@ export default function Explore3D({ onExit }) {
         <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-surface/85 px-3 py-2 backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_6px_#4ade80]" />
           <span className="font-mono text-xs text-text-secondary">
-            {count} online
+            {count} {DRIVE.onlineSuffix}
           </span>
         </div>
         <input
           value={name}
           onChange={(e) => onName(e.target.value.slice(0, 16))}
-          placeholder="your name"
+          placeholder={DRIVE.namePlaceholder}
           className="pointer-events-auto w-28 rounded-full border border-border bg-surface/85 px-3 py-2 font-mono text-xs text-text-primary placeholder:text-text-muted backdrop-blur focus:border-amber/60 focus:outline-none"
         />
       </div>
@@ -257,9 +260,9 @@ export default function Explore3D({ onExit }) {
             <kbd className="flex h-6 items-center justify-center rounded border border-border px-2 font-mono text-[11px] text-text-primary">
               SPACE
             </kbd>
-            <span className="font-mono text-[11px] text-amber">drift</span>
+            <span className="font-mono text-[11px] text-amber">{DRIVE.driftLabel}</span>
           </div>
-          <span className="font-mono text-xs text-text-muted">drive to a beacon to explore</span>
+          <span className="font-mono text-xs text-text-muted">{DRIVE.beaconHint}</span>
         </div>
       </div>
     </div>

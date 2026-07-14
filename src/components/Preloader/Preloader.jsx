@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/utils/gsapConfig'
+import { CONTENT } from '@/utils/constants'
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ·—01'
-const NAME = 'QAISS ABDELHAMID'
+const NAME = CONTENT.preloader.name
 
 export default function Preloader({ onComplete }) {
   const overlayRef = useRef(null)

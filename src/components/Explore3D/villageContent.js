@@ -1,44 +1,48 @@
-import { PERSONAL, SKILLS, EXPERIENCE, PROJECTS } from '@/utils/constants'
+import { PERSONAL, SKILLS, EXPERIENCE, PROJECTS, CONTENT } from '@/utils/constants'
 
 const names = (arr) => arr.map((s) => s.name)
+const V = CONTENT.driveMode.villages
 
 // Compact, 3D-text-friendly content for each village's two roadside billboards
 // (left / right) and the floating landmark number. Kept short so the text stays
 // legible in-world; the full detail still lives in the DOM ContentPanel.
+// Editable strings (banners, billboard titles, static lines) live in
+// src/content/content.json (driveMode.villages); the rest is derived from the
+// portfolio data so it stays in sync automatically.
 export const VILLAGE_CONTENT = {
   profile: {
-    banner: 'PROFILE',
-    monument: '01',
-    left: { title: 'WHO', lines: [PERSONAL.name, PERSONAL.title] },
-    right: { title: 'ABOUT', lines: [PERSONAL.location, 'EN · FR · AR', 'Freelance ready'] },
+    banner: V.profile.banner,
+    monument: V.profile.monument,
+    left: { title: V.profile.leftTitle, lines: [PERSONAL.name, PERSONAL.title] },
+    right: { title: V.profile.rightTitle, lines: [PERSONAL.location, ...V.profile.rightExtraLines] },
   },
   skills: {
-    banner: 'SKILLS',
-    monument: '02',
-    left: { title: 'FRONTEND', lines: names(SKILLS.frontend).slice(0, 5) },
+    banner: V.skills.banner,
+    monument: V.skills.monument,
+    left: { title: V.skills.leftTitle, lines: names(SKILLS.frontend).slice(0, 5) },
     right: {
-      title: 'BACKEND · AI',
+      title: V.skills.rightTitle,
       lines: [...names(SKILLS.backend).slice(0, 3), ...names(SKILLS.ai).slice(0, 2)],
     },
   },
   experience: {
     // station id 'experience' → titled "Impact"
-    banner: 'IMPACT',
-    monument: '03',
-    left: { title: 'BY THE NUMBERS', lines: ['5+ years shipping', '-40% load time', '85%+ coverage'] },
-    right: { title: 'RESULTS', lines: ['-60% prod bugs', '10k+ users', '4.2 / 5 rating'] },
+    banner: V.experience.banner,
+    monument: V.experience.monument,
+    left: { title: V.experience.leftTitle, lines: V.experience.leftLines },
+    right: { title: V.experience.rightTitle, lines: V.experience.rightLines },
   },
   work: {
     // station id 'work' → titled "Experience"
-    banner: 'EXPERIENCE',
-    monument: '04',
-    left: { title: 'NOW', lines: [EXPERIENCE[0].company, EXPERIENCE[0].role] },
-    right: { title: 'BEFORE', lines: EXPERIENCE.slice(1).map((e) => e.company) },
+    banner: V.work.banner,
+    monument: V.work.monument,
+    left: { title: V.work.leftTitle, lines: [EXPERIENCE[0].company, EXPERIENCE[0].role] },
+    right: { title: V.work.rightTitle, lines: EXPERIENCE.slice(1).map((e) => e.company) },
   },
   projects: {
-    banner: 'PROJECTS',
-    monument: '05',
-    left: { title: 'BUILT', lines: PROJECTS.slice(0, 3).map((p) => p.name) },
-    right: { title: 'ALSO', lines: PROJECTS.slice(3).map((p) => p.name) },
+    banner: V.projects.banner,
+    monument: V.projects.monument,
+    left: { title: V.projects.leftTitle, lines: PROJECTS.slice(0, 3).map((p) => p.name) },
+    right: { title: V.projects.rightTitle, lines: PROJECTS.slice(3).map((p) => p.name) },
   },
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from '@/theme/ThemeContext'
+import { CONTENT } from '@/utils/constants'
 import {
   BLOCKS,
   FONT_OPTIONS,
@@ -34,6 +35,7 @@ export default function ThemePanel() {
   } = useTheme()
   const [open, setOpen] = useState(false)
   const { accent, accent2 } = resolveAccents(theme)
+  const T = CONTENT.themePanel
 
   // Load all preview fonts + close on Escape while open
   useEffect(() => {
@@ -90,7 +92,7 @@ export default function ThemePanel() {
         }`}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <span className="font-mono text-sm tracking-wider text-amber">{'> theme'}</span>
+          <span className="font-mono text-sm tracking-wider text-amber">{T.title}</span>
           <button
             onClick={() => setOpen(false)}
             aria-label="Close theme settings"
@@ -102,7 +104,7 @@ export default function ThemePanel() {
 
         <div className="px-5 py-6">
           {/* Palette */}
-          <Row label="// palette">
+          <Row label={T.palette}>
             <div className="grid grid-cols-2 gap-2">
               {THEMES.map((t) => {
                 const active = theme.palette === t.name
@@ -139,11 +141,11 @@ export default function ThemePanel() {
           </Row>
 
           {/* Custom accents */}
-          <Row label="// custom colors">
+          <Row label={T.customColors}>
             <div className="flex gap-3">
               <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 hover:border-amber/40">
                 <span className="h-5 w-5 rounded-full border border-border" style={{ backgroundColor: `rgb(${accent})` }} />
-                <span className="font-mono text-xs text-text-secondary">Primary</span>
+                <span className="font-mono text-xs text-text-secondary">{T.primary}</span>
                 <input
                   type="color"
                   value={rgbChannelsToHex(accent)}
@@ -157,7 +159,7 @@ export default function ThemePanel() {
               </label>
               <label className="flex flex-1 cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 hover:border-amber/40">
                 <span className="h-5 w-5 rounded-full border border-border" style={{ backgroundColor: `rgb(${accent2})` }} />
-                <span className="font-mono text-xs text-text-secondary">Second</span>
+                <span className="font-mono text-xs text-text-secondary">{T.second}</span>
                 <input
                   type="color"
                   value={rgbChannelsToHex(accent2)}
@@ -173,7 +175,7 @@ export default function ThemePanel() {
           </Row>
 
           {/* Font family */}
-          <Row label="// font">
+          <Row label={T.font}>
             <div className="flex flex-col gap-1.5">
               {FONT_OPTIONS.map((f) => {
                 const active = theme.font === f.label
@@ -198,7 +200,7 @@ export default function ThemePanel() {
           </Row>
 
           {/* Font size */}
-          <Row label={`// text size — ${Math.round(theme.fontScale * 100)}%`}>
+          <Row label={`${T.textSizePrefix}${Math.round(theme.fontScale * 100)}%`}>
             <input
               type="range"
               min={FONT_SCALE_MIN}
@@ -212,7 +214,7 @@ export default function ThemePanel() {
           </Row>
 
           {/* Blocks */}
-          <Row label="// sections">
+          <Row label={T.sections}>
             <div className="flex flex-col gap-1">
               {BLOCKS.map((b) => {
                 const visible = !theme.hiddenBlocks.includes(b.id)
@@ -234,7 +236,7 @@ export default function ThemePanel() {
                       {b.label}
                     </span>
                     {!b.hideable && (
-                      <span className="ml-auto text-[10px] text-text-muted">locked</span>
+                      <span className="ml-auto text-[10px] text-text-muted">{T.locked}</span>
                     )}
                   </label>
                 )
@@ -246,7 +248,7 @@ export default function ThemePanel() {
             onClick={reset}
             className="mt-2 w-full rounded-md border border-border py-2.5 font-mono text-xs text-text-secondary transition-colors duration-150 hover:border-amber/40 hover:text-amber"
           >
-            Reset to defaults
+            {T.reset}
           </button>
         </div>
       </aside>
