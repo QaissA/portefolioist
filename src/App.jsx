@@ -19,6 +19,7 @@ const Timeline = lazy(() => import('@/components/Timeline/Timeline'))
 const AISection = lazy(() => import('@/components/AISection/AISection'))
 const Contact = lazy(() => import('@/components/Contact/Contact'))
 const Explore3D = lazy(() => import('@/components/Explore3D/Explore3D'))
+const HeroPet = lazy(() => import('@/components/Hero/HeroPet'))
 
 // Maps block ids (see themeConfig BLOCKS) to their components. Timeline /
 // AISection / Contact are lazy and rendered inside a shared Suspense boundary.
@@ -67,6 +68,11 @@ function AppShell() {
         {loaded && <Main />}
       </div>
       {loaded && <GameHUD />}
+      {loaded && (
+        <Suspense fallback={null}>
+          <HeroPet />
+        </Suspense>
+      )}
       {loaded && (
         <ExploreLauncher
           onOpen={() => {
