@@ -13,7 +13,12 @@
       "Bash(curl -s http://localhost:5173)",
       "Bash(npm create *)",
       "Bash(npx tailwindcss *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(claude mcp *)",
+      "mcp__higgs__balance",
+      "mcp__higgs__generate_3d",
+      "mcp__higgs__generate_image",
+      "mcp__higgs__show_plans_and_credits"
     ]
   }
 }

@@ -1,68 +1,112 @@
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
 import { Text, Float } from '@react-three/drei'
 import * as THREE from 'three'
 import { VILLAGE_CONTENT } from './villageContent'
+import { EnvModel } from './Landscape'
+import { VILLAGE_RADIUS } from './stations'
 
-// Local-space house spots — kept off the central corridor (|x| >= 6) so the
-// road from entry to exit stays clear.
+// Local-space layout (drive axis = local Z, entry gate at -Z, exit at +Z):
+// a main road through the gates, two cross streets at z = ±STREET_Z, and
+// houses facing the streets. The billboards sit beside the main road between
+// the cross streets.
+const HOUSES_DIR = '/models/houses/GLB%20format/'
+const BUILDINGS = 'abcdefghijklmnopqrstu'.split('').map((c) => `building-type-${c}`)
+const HOUSE_SCALE = 3
+const STREET_Z = 10
+const GATE_Z = VILLAGE_RADIUS - 1
+
+// low-poly kit palette for signs (village colour only as an accent)
+const WOOD = '#6e4b2e'
+const PAPER = '#efe4cc'
+const INK = '#3b2a1c'
+
+// Iron-fence ring around the village, with a gap where the main road runs out.
+const FENCE_SCALE = 2.4
+const FENCE = (() => {
+  const n = Math.round((2 * Math.PI * VILLAGE_RADIUS) / FENCE_SCALE)
+  const out = []
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2
+    const x = Math.sin(a) * VILLAGE_RADIUS
+    if (Math.abs(x) < 4.5) continue // road gap
+    out.push({ x, z: Math.cos(a) * VILLAGE_RADIUS, rot: a + Math.PI }) // model's offset side faces out
+  }
+  return out
+})()
+
+// Road tiles: driveway-long (0.36 x 0.4) stretched flat (y scale 1). Main road
+// is 6 wide, fence to fence; cross streets are 4 wide, main road to |x| = 19.
+const MAIN_TILES = Array.from({ length: 8 }, (_, i) => -VILLAGE_RADIUS + 2.75 + i * 5.5)
+const MAIN_SCALE = [6 / 0.36, 1, 5.5 / 0.4]
+const CROSS_TILES = [-17, -13, -9, -5, 5, 9, 13, 17].flatMap((x) => [-STREET_Z, STREET_Z].map((z) => ({ x, z })))
+const CROSS_SCALE = [4 / 0.36, 1, 4 / 0.4]
+
+// Houses: rot points the model's door (+Z) at the street it sits on.
 const HOUSES = [
-  { x: -8.5, z: -5 },
-  { x: -9.5, z: 2 },
-  { x: -7, z: 8 },
-  { x: 8.5, z: -6 },
-  { x: 9.5, z: 1 },
-  { x: 7, z: 7.5 },
+  // outer rows, behind each cross street
+  ...[-13, -7.5, 7.5, 13].flatMap((x) => [
+    { x, z: STREET_Z + 4.5, rot: Math.PI },
+    { x, z: -STREET_Z - 4.5, rot: 0 },
+  ]),
+  // inner rows, between the cross streets (clear of the billboards' sight line)
+  ...[-16.5, -7.5, 7.5, 16.5].flatMap((x) => [
+    { x, z: STREET_Z - 4.5, rot: 0 },
+    { x, z: -STREET_Z + 4.5, rot: Math.PI },
+  ]),
 ]
 
-function House({ x, z, color }) {
-  const facing = x < 0 ? Math.PI / 2 : -Math.PI / 2 // door faces the road
+const LIGHTS = [-16, -4, 4, 16].flatMap((z) => [-3.9, 3.9].map((x) => ({ x, z })))
+const TREES = [
+  ...[-10.25, 10.25].flatMap((x) => [-17.5, 17.5].map((z) => ({ x, z }))),
+  ...[-19, 19].flatMap((x) => [-1.5, 1.5].map((z) => ({ x, z }))),
+]
+
+function House({ x, z, rot, name }) {
   return (
-    <group position={[x, 0, z]} rotation={[0, facing, 0]}>
-      <mesh castShadow position={[0, 1, 0]}>
-        <boxGeometry args={[2.4, 2, 2.4]} />
-        <meshStandardMaterial color="#e8e2d5" roughness={0.9} />
-      </mesh>
-      <mesh castShadow position={[0, 2.55, 0]} rotation={[0, Math.PI / 4, 0]}>
-        <coneGeometry args={[2.0, 1.4, 4]} />
-        <meshStandardMaterial color={color} roughness={0.8} flatShading />
-      </mesh>
-      <mesh position={[0, 0.85, 1.21]}>
-        <boxGeometry args={[0.7, 1.2, 0.06]} />
-        <meshStandardMaterial color="#5b4327" />
-      </mesh>
-    </group>
+    <>
+      <EnvModel dir={HOUSES_DIR} name={name} position={[x, 0, z]} rotation-y={rot} scale={HOUSE_SCALE} solid={0.8} />
+      {/* stepping-stone path from the door out to the street */}
+      <EnvModel
+        dir={HOUSES_DIR}
+        name="path-stones-long"
+        position={[x + Math.sin(rot) * 2.3, 0.02, z + Math.cos(rot) * 2.3]}
+        rotation-y={rot}
+        scale={[10, 1, 5]}
+      />
+    </>
   )
 }
 
 function Gate({ z, color, label, faceAngle, active }) {
+  const front = faceAngle === 0 ? 0.13 : -0.13
   return (
     <group position={[0, 0, z]}>
-      {[-3.6, 3.6].map((x) => (
-        <mesh key={x} castShadow position={[x, 2.2, 0]}>
-          <boxGeometry args={[0.6, 4.4, 0.6]} />
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={active ? 0.8 : 0.4}
-            roughness={0.5}
-          />
-        </mesh>
+      {[-3.8, 3.8].map((x) => (
+        <group key={x} position={[x, 0, 0]}>
+          <EnvModel name="column-large" scale={4} solid={0.9} />
+          <EnvModel name="lantern-glass" position={[0, 4.52, 0]} scale={3} />
+        </group>
       ))}
-      <mesh castShadow position={[0, 4.7, 0]}>
-        <boxGeometry args={[8, 0.8, 0.8]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={active ? 0.6 : 0.3} />
+      {/* wooden crossbeam + painted sign with a strip of the village colour */}
+      <mesh position={[0, 4.0, 0]}>
+        <boxGeometry args={[8.4, 0.45, 0.5]} />
+        <meshStandardMaterial color={WOOD} roughness={0.9} flatShading />
+      </mesh>
+      <mesh position={[0, 4.95, 0]}>
+        <boxGeometry args={[6.4, 1.45, 0.2]} />
+        <meshStandardMaterial color={PAPER} roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 5.75, 0]}>
+        <boxGeometry args={[6.6, 0.22, 0.26]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={active ? 0.5 : 0} />
       </mesh>
       <Text
-        position={[0, 4.7, faceAngle === 0 ? 0.45 : -0.45]}
+        position={[0, 4.92, front]}
         rotation={[0, faceAngle, 0]}
-        fontSize={label.length > 6 ? 1 : 1.3}
-        color="#ffffff"
+        fontSize={label.length > 6 ? 0.8 : 1}
+        color={INK}
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.04}
-        outlineColor="#000000"
-        maxWidth={7.2}
+        maxWidth={6}
       >
         {label}
       </Text>
@@ -75,45 +119,44 @@ function Billboard({ side, color, title, lines }) {
   return (
     <group position={[side * 13, 0, 0]} rotation={[0, ry, 0]}>
       {[-3, 3].map((px) => (
-        <mesh key={px} castShadow position={[px, 1.6, 0]}>
-          <boxGeometry args={[0.4, 3.2, 0.4]} />
-          <meshStandardMaterial color="#3a3a3a" roughness={0.7} />
+        <mesh key={px} position={[px, 1.6, -0.1]}>
+          <boxGeometry args={[0.45, 3.2, 0.45]} />
+          <meshStandardMaterial color={WOOD} roughness={0.9} flatShading />
         </mesh>
       ))}
-      {/* colored frame */}
-      <mesh castShadow position={[0, 5, -0.12]}>
+      {/* wooden frame, paper board, coloured header band */}
+      <mesh position={[0, 5, -0.12]}>
         <boxGeometry args={[8.7, 5.2, 0.25]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.4} />
+        <meshStandardMaterial color={WOOD} roughness={0.9} flatShading />
       </mesh>
-      {/* dark board face */}
       <mesh position={[0, 5, 0.02]}>
         <boxGeometry args={[8.1, 4.6, 0.3]} />
-        <meshStandardMaterial color="#141414" roughness={0.6} />
+        <meshStandardMaterial color={PAPER} roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 6.62, 0.04]}>
+        <boxGeometry args={[8.1, 0.95, 0.32]} />
+        <meshStandardMaterial color={color} roughness={0.7} />
       </mesh>
       <Text
-        position={[0, 6.55, 0.22]}
-        fontSize={0.62}
-        color={color}
+        position={[0, 6.6, 0.22]}
+        fontSize={0.55}
+        color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        maxWidth={7.4}
+        maxWidth={7.6}
         textAlign="center"
-        outlineWidth={0.02}
-        outlineColor="#000000"
       >
         {title}
       </Text>
       <Text
-        position={[0, 4.55, 0.22]}
-        fontSize={0.52}
-        color="#f2f2f2"
+        position={[0, 4.4, 0.22]}
+        fontSize={0.5}
+        color={INK}
         anchorX="center"
         anchorY="middle"
         maxWidth={7.4}
         textAlign="center"
         lineHeight={1.5}
-        outlineWidth={0.015}
-        outlineColor="#000000"
       >
         {lines.join('\n')}
       </Text>
@@ -124,52 +167,91 @@ function Billboard({ side, color, title, lines }) {
 /**
  * A "little village" for one portfolio section. Built in local space (drive
  * axis = local Z) then yaw-rotated so the entry faces the world origin, i.e.
- * the car drives in through the entry arch and out the exit. Section info sits
+ * the car drives in through the entry gate and out the exit. Section info sits
  * on the left/right roadside billboards as 3D text; the section number floats
- * over the plaza as a landmark.
+ * over the centre as a landmark.
  */
 export default function Village({ station, active }) {
-  const ring = useRef()
   const content = VILLAGE_CONTENT[station.id]
   const color = station.color
   const [px, , pz] = station.position
+  // stable per-village building mix (step 5 is coprime with 21, so no repeats within a village)
+  const seed = [...station.id].reduce((n, ch) => n + ch.charCodeAt(0), 0)
 
   // yaw so local +Z points away from the origin (exit side); entry is at -Z.
   const angle = Math.atan2(px, pz)
 
-  useFrame((frame) => {
-    if (ring.current) ring.current.rotation.z = frame.clock.elapsedTime * 0.25
-  })
-
   return (
     <group position={station.position} rotation={[0, angle, 0]}>
-      {/* plaza disc + rotating perimeter ring */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow>
-        <circleGeometry args={[12, 60]} />
-        <meshStandardMaterial color="#6b6250" roughness={1} />
+      {/* village ground + village-colour ring just outside the fence */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.015, 0]}>
+        <circleGeometry args={[VILLAGE_RADIUS, 64]} />
+        <meshStandardMaterial color="#7f8f52" roughness={1} />
       </mesh>
-      <mesh ref={ring} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <ringGeometry args={[11.4, 12, 64]} />
-        <meshBasicMaterial color={color} transparent opacity={active ? 1 : 0.7} side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* road strip from entry to exit */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]} receiveShadow>
-        <planeGeometry args={[6, 28]} />
-        <meshStandardMaterial color="#2f2b26" roughness={1} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+        <ringGeometry args={[VILLAGE_RADIUS + 0.6, VILLAGE_RADIUS + 1.3, 72]} />
+        <meshBasicMaterial color={color} transparent opacity={active ? 1 : 0.55} side={THREE.DoubleSide} />
       </mesh>
 
-      <Gate z={-12} color={color} label={content.banner} faceAngle={Math.PI} active={active} />
-      <Gate z={12} color={color} label="EXIT ▸" faceAngle={0} active={active} />
+      {MAIN_TILES.map((z) => (
+        <EnvModel key={`m${z}`} dir={HOUSES_DIR} name="driveway-long" position={[0, 0.03, z]} scale={MAIN_SCALE} />
+      ))}
+      {CROSS_TILES.map((t) => (
+        <EnvModel
+          key={`c${t.x},${t.z}`}
+          dir={HOUSES_DIR}
+          name="driveway-long"
+          position={[t.x, 0.03, t.z]}
+          rotation-y={Math.PI / 2}
+          scale={CROSS_SCALE}
+        />
+      ))}
+
+      {FENCE.map((f, i) => (
+        <EnvModel
+          key={i}
+          name="iron-fence-border"
+          position={[f.x, 0, f.z]}
+          rotation-y={f.rot}
+          scale={FENCE_SCALE}
+          solid={0.6}
+        />
+      ))}
+
+      <Gate z={-GATE_Z} color={color} label={content.banner} faceAngle={Math.PI} active={active} />
+      <Gate z={GATE_Z} color={color} label="EXIT ▸" faceAngle={0} active={active} />
 
       {HOUSES.map((h, i) => (
-        <House key={i} x={h.x} z={h.z} color={color} />
+        <House key={i} {...h} name={BUILDINGS[(seed + i * 5) % BUILDINGS.length]} />
+      ))}
+      {LIGHTS.map((l, i) => (
+        <EnvModel key={`l${i}`} name="lightpost-double" position={[l.x, 0, l.z]} scale={3} solid={0.25} />
+      ))}
+      {TREES.map((t, i) => (
+        <EnvModel
+          key={`t${i}`}
+          dir={HOUSES_DIR}
+          name={i % 2 ? 'tree-small' : 'tree-large'}
+          position={[t.x, 0, t.z]}
+          scale={5}
+          solid={0.3}
+        />
+      ))}
+      {[-4.6, 4.6].map((x) => (
+        <EnvModel
+          key={`b${x}`}
+          name="bench"
+          position={[x, 0, 0]}
+          rotation-y={x < 0 ? Math.PI / 2 : -Math.PI / 2}
+          scale={2.5}
+          solid={0.6}
+        />
       ))}
 
       <Billboard side={-1} color={color} title={content.left.title} lines={content.left.lines} />
       <Billboard side={1} color={color} title={content.right.title} lines={content.right.lines} />
 
-      {/* floating landmark number over the plaza */}
+      {/* floating landmark number over the centre */}
       <Float speed={2} floatIntensity={1.2} rotationIntensity={0.5}>
         <Text
           position={[0, 8, 0]}
@@ -178,8 +260,7 @@ export default function Village({ station, active }) {
           anchorX="center"
           anchorY="middle"
           outlineWidth={0.06}
-          outlineColor="#000000"
-          outlineOpacity={0.4}
+          outlineColor="#2a1d12"
         >
           {content.monument}
         </Text>

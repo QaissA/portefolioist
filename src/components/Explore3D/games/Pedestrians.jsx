@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { STATIONS, WORLD_BOUND } from '../stations'
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js'
+import { STATIONS, WORLD_BOUND, VILLAGE_RADIUS } from '../stations'
 import { scatter } from './util'
 
 const COUNT = 22
@@ -14,9 +16,25 @@ const BLOOD_POOL = 90
 const SPLAT_POOL = 20
 const BEST_KEY = 'drive:bowlingbest'
 
-const SHIRT = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#ec4899', '#14b8a6', '#f97316', '#a855f7']
-const PANTS = ['#2b3245', '#3f3f46', '#4b3b2a', '#1e293b']
-const SKIN = ['#f1c27d', '#e0ac69', '#c68642', '#8d5524', '#ffdbac']
+const ANIMAL_SCALE = 1.3
+const ANIMALS = [
+  'beaver', 'bee', 'bunny', 'cat', 'caterpillar', 'chick', 'cow', 'crab', 'deer', 'dog', 'elephant', 'fish',
+  'fox', 'giraffe', 'hog', 'koala', 'lion', 'monkey', 'panda', 'parrot', 'penguin', 'pig', 'polar', 'tiger',
+].map((n) => `/models/GLB%20format/animal-${n}.glb`)
+
+// One animal GLB, cloned per figure, playing its own "walk" clip.
+function Animal({ url }) {
+  const { scene, animations } = useGLTF(url)
+  const model = useMemo(() => cloneSkinned(scene), [scene])
+  const mixer = useMemo(() => new THREE.AnimationMixer(model), [model])
+  useEffect(() => {
+    const clip = THREE.AnimationClip.findByName(animations, 'walk')
+    if (clip) mixer.clipAction(clip).play()
+    return () => mixer.stopAllAction()
+  }, [mixer, animations])
+  useFrame((_, delta) => mixer.update(delta))
+  return <primitive object={model} scale={ANIMAL_SCALE} />
+}
 
 function loadBest() {
   try {
@@ -37,7 +55,7 @@ function pickSpot() {
     for (const s of STATIONS) {
       const dx = s.position[0] - x
       const dz = s.position[2] - z
-      if (dx * dx + dz * dz < 18 * 18) {
+      if (dx * dx + dz * dz < VILLAGE_RADIUS * VILLAGE_RADIUS) {
         bad = true
         break
       }
@@ -65,22 +83,19 @@ function makeBloodTexture() {
 }
 
 /**
- * "Deadly driver" arcade round: low-poly humanoids walk the map. Drive into one
+ * "Deadly driver" arcade round: random low-poly animals (public/models/GLB format) walk the map. Drive into one
  * and it's knocked down in a splatter of blood for points, then a fresh one
  * spawns. Stylised low-poly gore (red particles + a fading ground splat), not
  * photoreal. 60s per round; best score persists.
  */
 export default function Pedestrians({ posRef, gameRef }) {
   const groupRefs = useRef([])
-  const legLRefs = useRef([])
-  const legRRefs = useRef([])
-  const armLRefs = useRef([])
-  const armRRefs = useRef([])
   const bloodRefs = useRef([])
   const bloodMatRefs = useRef([])
   const splatRefs = useRef([])
   const splatMatRefs = useRef([])
   const [texture] = useState(makeBloodTexture)
+  const [kinds] = useState(() => Array.from({ length: COUNT }, () => ANIMALS[Math.floor(Math.random() * ANIMALS.length)]))
 
   const figures = useRef(
     scatter(55221, COUNT).map((p) => ({
@@ -230,15 +245,6 @@ export default function Pedestrians({ posRef, gameRef }) {
       g.position.set(f.x, 0, f.z)
       g.rotation.x = 0
       g.rotation.y = Math.atan2(f.vx, f.vz)
-
-      // walk cycle — swing arms/legs opposite each other
-      const speed = Math.hypot(f.vx, f.vz)
-      const phase = now * 8 + i
-      const swing = Math.sin(phase) * Math.min(1, speed / 3)
-      if (legLRefs.current[i]) legLRefs.current[i].rotation.x = swing * 0.6
-      if (legRRefs.current[i]) legRRefs.current[i].rotation.x = -swing * 0.6
-      if (armLRefs.current[i]) armLRefs.current[i].rotation.x = -swing * 0.5
-      if (armRRefs.current[i]) armRRefs.current[i].rotation.x = swing * 0.5
     }
 
     // blood droplets
@@ -306,51 +312,13 @@ export default function Pedestrians({ posRef, gameRef }) {
 
   return (
     <group>
-      {Array.from({ length: COUNT }).map((_, i) => {
-        const shirt = SHIRT[i % SHIRT.length]
-        const pants = PANTS[i % PANTS.length]
-        const skin = SKIN[i % SKIN.length]
-        return (
-          <group key={i} ref={(el) => (groupRefs.current[i] = el)}>
-            {/* torso */}
-            <mesh position={[0, 1.15, 0]}>
-              <boxGeometry args={[0.55, 0.8, 0.32]} />
-              <meshStandardMaterial color={shirt} flatShading />
-            </mesh>
-            {/* head */}
-            <mesh position={[0, 1.78, 0]}>
-              <sphereGeometry args={[0.26, 10, 8]} />
-              <meshStandardMaterial color={skin} flatShading />
-            </mesh>
-            {/* arms (pivot at shoulder) */}
-            <group position={[-0.4, 1.5, 0]} ref={(el) => (armLRefs.current[i] = el)}>
-              <mesh position={[0, -0.32, 0]}>
-                <boxGeometry args={[0.15, 0.7, 0.15]} />
-                <meshStandardMaterial color={shirt} flatShading />
-              </mesh>
-            </group>
-            <group position={[0.4, 1.5, 0]} ref={(el) => (armRRefs.current[i] = el)}>
-              <mesh position={[0, -0.32, 0]}>
-                <boxGeometry args={[0.15, 0.7, 0.15]} />
-                <meshStandardMaterial color={shirt} flatShading />
-              </mesh>
-            </group>
-            {/* legs (pivot at hip) */}
-            <group position={[-0.16, 0.75, 0]} ref={(el) => (legLRefs.current[i] = el)}>
-              <mesh position={[0, -0.38, 0]}>
-                <boxGeometry args={[0.18, 0.78, 0.19]} />
-                <meshStandardMaterial color={pants} flatShading />
-              </mesh>
-            </group>
-            <group position={[0.16, 0.75, 0]} ref={(el) => (legRRefs.current[i] = el)}>
-              <mesh position={[0, -0.38, 0]}>
-                <boxGeometry args={[0.18, 0.78, 0.19]} />
-                <meshStandardMaterial color={pants} flatShading />
-              </mesh>
-            </group>
-          </group>
-        )
-      })}
+      {kinds.map((url, i) => (
+        <group key={i} ref={(el) => (groupRefs.current[i] = el)}>
+          <Suspense fallback={null}>
+            <Animal url={url} />
+          </Suspense>
+        </group>
+      ))}
 
       {/* blood droplets */}
       {Array.from({ length: BLOOD_POOL }).map((_, i) => (

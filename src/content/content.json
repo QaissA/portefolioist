@@ -319,6 +319,7 @@
     "driftLabel": "drift",
     "beaconHint": "drive to a beacon to explore",
     "switchHint": "switch",
+    "carLabel": "Car",
     "gameModes": [
       { "id": "explore", "label": "Explore", "icon": "🧭", "hint": "Free roam — visit the villages" },
       { "id": "timetrial", "label": "Time Trial", "icon": "⏱️", "hint": "Hit all 5 villages, fastest time" },
@@ -327,11 +328,11 @@
       { "id": "chase", "label": "Bowling", "icon": "🎳", "hint": "Bump the wanderers for points" }
     ],
     "stations": [
-      { "id": "profile", "number": "01", "title": "Profile", "color": "#F59E0B", "position": [0, 0, -34] },
-      { "id": "skills", "number": "02", "title": "Skills", "color": "#0EA5E9", "position": [-40, 0, -2] },
-      { "id": "experience", "number": "03", "title": "Impact", "color": "#10B981", "position": [40, 0, -2] },
-      { "id": "work", "number": "04", "title": "Experience", "color": "#8B5CF6", "position": [-26, 0, 40] },
-      { "id": "projects", "number": "05", "title": "Projects", "color": "#F43F5E", "position": [26, 0, 40] }
+      { "id": "profile", "number": "01", "title": "Profile", "color": "#F59E0B", "position": [0, 0, -51] },
+      { "id": "skills", "number": "02", "title": "Skills", "color": "#0EA5E9", "position": [-60, 0, -3] },
+      { "id": "experience", "number": "03", "title": "Impact", "color": "#10B981", "position": [60, 0, -3] },
+      { "id": "work", "number": "04", "title": "Experience", "color": "#8B5CF6", "position": [-39, 0, 60] },
+      { "id": "projects", "number": "05", "title": "Projects", "color": "#F43F5E", "position": [39, 0, 60] }
     ],
     "villages": {
       "profile": {

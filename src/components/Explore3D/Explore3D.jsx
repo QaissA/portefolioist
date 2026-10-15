@@ -5,17 +5,21 @@ import Car from './Car'
 import Smoke from './Smoke'
 import Village from './Village'
 import Landscape from './Landscape'
+import Mountains from './Mountains'
 import ContentPanel from './ContentPanel'
 import Minimap from './Minimap'
 import RemotePlayers from './RemotePlayers'
 import GameLayer from './games/GameLayer'
 import GameHUD3D from './games/GameHUD3D'
 import { useMultiplayer } from '@/hooks/useMultiplayer'
-import { STATIONS } from './stations'
+import { STATIONS, CARS, DEFAULT_CAR } from './stations'
 import { GAME_MODES } from './games/gameModes'
 import { CONTENT } from '@/utils/constants'
 
 const DRIVE = CONTENT.driveMode
+// pre-rendered 3/4 views of each car model (one PNG per entry in CARS)
+const CAR_PREVIEWS = '/models/cars/previews/'
+const carName = (c) => c.replace(/-/g, ' ')
 
 // Read a "R G B" CSS custom property → "#rrggbb" so the 3D scene tracks the
 // active theme (amber / neon / bubblegum …).
@@ -35,6 +39,15 @@ function loadName() {
   }
 }
 
+function loadCar() {
+  try {
+    const c = localStorage.getItem('drive:car')
+    return CARS.includes(c) ? c : DEFAULT_CAR
+  } catch {
+    return DEFAULT_CAR
+  }
+}
+
 function readThemeColors() {
   return {
     bg: cssHex('--color-bg', '#0a0a0a'),
@@ -46,11 +59,11 @@ function readThemeColors() {
   }
 }
 
-function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef, peersRef }) {
+function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef, peersRef, car }) {
   return (
     <>
       <color attach="background" args={['#bcdcef']} />
-      <fog attach="fog" args={['#c9e2ee', 70, 210]} />
+      <fog attach="fog" args={['#c9e2ee', 90, 380]} />
       <Sky
         sunPosition={[80, 45, 60]}
         turbidity={5}
@@ -88,12 +101,13 @@ function Scene({ colors, onActiveChange, posRef, active, mode, runId, gameRef, p
       />
 
       <Landscape />
+      <Mountains />
 
       {STATIONS.map((s) => (
         <Village key={s.id} station={s} active={active === s.id} />
       ))}
 
-      <Car bodyColor={colors.accent} onActiveChange={onActiveChange} posRef={posRef} />
+      <Car car={car} bodyColor={colors.accent} onActiveChange={onActiveChange} posRef={posRef} />
       <Smoke poseRef={posRef} />
       <RemotePlayers peersRef={peersRef} />
       <GameLayer mode={mode} runId={runId} posRef={posRef} gameRef={gameRef} />
@@ -110,6 +124,17 @@ export default function Explore3D({ onExit }) {
   const posRef = useRef({ x: 0, z: 16, heading: Math.PI })
   const gameRef = useRef({ primary: '', secondary: '', flash: '', done: false })
   const colors = useMemo(() => readThemeColors(), [])
+  const [car, setCar] = useState(loadCar)
+  const [carMenu, setCarMenu] = useState(false)
+  const pickCar = (c) => {
+    setCar(c)
+    setCarMenu(false)
+    try {
+      localStorage.setItem('drive:car', c)
+    } catch {
+      /* ignore */
+    }
+  }
 
   // --- Multiplayer (peer-to-peer, no backend) ---
   const [name, setName] = useState(loadName)
@@ -151,6 +176,10 @@ export default function Explore3D({ onExit }) {
         onExit()
         return
       }
+      if (e.code === 'KeyC') {
+        setCarMenu((v) => !v)
+        return
+      }
       if (e.key === 'Tab') {
         e.preventDefault() // keep Tab from moving focus through the HUD buttons
         const dir = e.shiftKey ? -1 : 1
@@ -171,7 +200,7 @@ export default function Explore3D({ onExit }) {
       <Canvas
         key={glKey}
         dpr={[1, 1.5]}
-        camera={{ position: [0, 6, 28], fov: 55, near: 0.1, far: 400 }}
+        camera={{ position: [0, 6, 28], fov: 55, near: 0.1, far: 900 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.domElement.addEventListener(
@@ -199,6 +228,7 @@ export default function Explore3D({ onExit }) {
           runId={runId}
           gameRef={gameRef}
           peersRef={peersRef}
+          car={car}
         />
       </Canvas>
 
@@ -234,6 +264,41 @@ export default function Explore3D({ onExit }) {
       </div>
 
       <Minimap posRef={posRef} active={active} />
+
+      {/* car picker: bottom-right button (current car preview) opens a preview grid above it */}
+      <div className="pointer-events-none fixed bottom-4 right-4 z-[10030] flex flex-col items-end gap-2">
+        {carMenu && (
+          <div className="pointer-events-auto grid max-h-[60vh] w-[min(92vw,26rem)] grid-cols-3 gap-2 overflow-y-auto rounded-2xl border border-border bg-surface/90 p-3 backdrop-blur">
+            {CARS.map((c) => (
+              <button
+                key={c}
+                onClick={() => pickCar(c)}
+                aria-pressed={c === car}
+                className={`flex flex-col items-center rounded-xl border p-1.5 transition-colors ${
+                  c === car
+                    ? 'border-amber/70 bg-amber/10 text-amber'
+                    : 'border-border text-text-secondary hover:border-amber/50 hover:text-text-primary'
+                }`}
+              >
+                <img src={`${CAR_PREVIEWS}${c}.png`} alt="" loading="lazy" className="aspect-[8/5] w-full object-contain" />
+                <span className="mt-1 font-mono text-[10px] capitalize">{carName(c)}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={() => setCarMenu((v) => !v)}
+          aria-expanded={carMenu}
+          className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-border bg-surface/85 py-1.5 pl-1.5 pr-3 font-mono text-xs text-text-secondary backdrop-blur transition-colors hover:border-amber/60 hover:text-text-primary"
+        >
+          <img src={`${CAR_PREVIEWS}${car}.png`} alt="" className="h-9 w-14 object-contain" />
+          <span className="flex flex-col items-start leading-tight">
+            <span className="text-[10px] text-text-muted">{DRIVE.carLabel}</span>
+            <span className="capitalize text-text-primary">{carName(car)}</span>
+          </span>
+          <kbd className="ml-1 rounded border border-border px-1 py-0.5 text-[10px] text-text-muted">C</kbd>
+        </button>
+      </div>
 
       <GameHUD3D mode={mode} setMode={setMode} runId={runId} setRunId={setRunId} gameRef={gameRef} />
 

@@ -1,4 +1,4 @@
-import { STATIONS, WORLD_BOUND } from '../stations'
+import { STATIONS, WORLD_BOUND, VILLAGE_RADIUS } from '../stations'
 
 // Same tiny deterministic PRNG used by Landscape — stable scatter per seed.
 export function mulberry32(seed) {
@@ -14,7 +14,7 @@ export function mulberry32(seed) {
 
 // Scatter `count` points across the drivable world, clear of the spawn point
 // and every village. Returns [{ x, z, r }] where r is a 0..1 variety value.
-export function scatter(seed, count, { spawnClear = 16, stationClear = 18 } = {}) {
+export function scatter(seed, count, { spawnClear = 16, stationClear = VILLAGE_RADIUS + 2 } = {}) {
   const rng = mulberry32(seed)
   const reach = WORLD_BOUND - 8
   const pts = []

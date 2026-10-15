@@ -11,5 +11,23 @@ export const STATIONS = CONTENT.driveMode.stations
 // as it passes through the entry arch.
 export const ARRIVE_RADIUS = 13
 
+// Fence radius of each village (houses, streets, gates sit inside it).
+export const VILLAGE_RADIUS = 22
+
 // Bounds of the drivable world (car clamps here).
 export const WORLD_BOUND = 150
+
+// Meshes the car rides on (Landscape's flattened ground + hills), filled when the model loads.
+export const terrain = []
+
+// Solid scenery footprints the car bumps off: { x, z, r } circles, registered by EnvModel's `solid` prop.
+export const colliders = []
+
+export const CARS_DIR = '/models/cars/GLB%20format/'
+// drivable models from the Kenney car kit (debris/wheels/cones left out)
+export const CARS = [
+  'sedan-sports', 'sedan', 'hatchback-sports', 'race', 'race-future', 'suv', 'suv-luxury', 'taxi', 'police',
+  'ambulance', 'firetruck', 'van', 'delivery', 'delivery-flat', 'truck', 'truck-flat', 'garbage-truck',
+  'tractor', 'tractor-police', 'tractor-shovel', 'kart-oobi', 'kart-oodi', 'kart-ooli', 'kart-oopi', 'kart-oozi',
+]
+export const DEFAULT_CAR = CARS[0]
