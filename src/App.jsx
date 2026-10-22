@@ -17,6 +17,7 @@ import ExploreLauncher from '@/components/Explore3D/ExploreLauncher'
 
 const Timeline = lazy(() => import('@/components/Timeline/Timeline'))
 const AISection = lazy(() => import('@/components/AISection/AISection'))
+const Showcase = lazy(() => import('@/components/Showcase/Showcase'))
 const Contact = lazy(() => import('@/components/Contact/Contact'))
 const Explore3D = lazy(() => import('@/components/Explore3D/Explore3D'))
 const HeroPet = lazy(() => import('@/components/Hero/HeroPet'))
@@ -24,8 +25,8 @@ const HeroPet = lazy(() => import('@/components/Hero/HeroPet'))
 // Maps block ids (see themeConfig BLOCKS) to their components. Timeline /
 // AISection / Contact are lazy and rendered inside a shared Suspense boundary.
 const EAGER = { hero: Hero, about: About, skills: Skills, achievements: Achievements }
-const LAZY = { timeline: Timeline, 'ai-section': AISection, contact: Contact }
-const ORDER = ['hero', 'about', 'skills', 'achievements', 'timeline', 'ai-section', 'contact']
+const LAZY = { timeline: Timeline, 'ai-section': AISection, showcase: Showcase, contact: Contact }
+const ORDER = ['hero', 'about', 'skills', 'achievements', 'timeline', 'ai-section', 'showcase', 'contact']
 
 function Main() {
   useLenis()

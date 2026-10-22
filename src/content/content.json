@@ -22,6 +22,7 @@
       { "id": "achievements", "label": "Impact" },
       { "id": "timeline", "label": "Experience" },
       { "id": "ai-section", "label": "AI Engineering" },
+      { "id": "showcase", "label": "Projects" },
       { "id": "contact", "label": "Contact" }
     ]
   },
@@ -215,8 +216,26 @@
     ]
   },
 
+  "showcase": {
+    "label": "// 06 Live Projects",
+    "headingLead": "Things I built,",
+    "headingAccent": "live on the web.",
+    "description": "Side projects deployed and running — click through and play with them.",
+    "visitCta": "Visit live",
+    "items": [
+      {
+        "id": "3d-studio",
+        "name": "3D Car Studio",
+        "kind": "Web app · 3D configurator",
+        "description": "Interactive car configurator rendered in real time with Three.js — orbit the model and customize it live in the browser.",
+        "stack": ["React", "Three.js", "Vite"],
+        "url": "https://3d-studio-iota.vercel.app"
+      }
+    ]
+  },
+
   "contact": {
-    "labelPrefix": "// 06 ",
+    "labelPrefix": "// 07 ",
     "scramble": "LET'S BUILD",
     "marqueeText": "LET'S WORK · AVAILABLE NOW · LET'S WORK · AVAILABLE NOW · ",
     "headingLead": "Ready when",

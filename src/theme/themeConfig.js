@@ -131,6 +131,7 @@ export const BLOCKS = [
   { id: 'achievements', label: 'Impact', hideable: true },
   { id: 'timeline', label: 'Experience', hideable: true },
   { id: 'ai-section', label: 'AI Engineering', hideable: true },
+  { id: 'showcase', label: 'Projects', hideable: true },
   { id: 'contact', label: 'Contact', hideable: true },
 ]
 

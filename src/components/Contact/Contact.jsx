@@ -72,7 +72,7 @@ export default function Contact() {
 
           {/* Heading with section number */}
           <div className="relative mb-10">
-            <SectionNumber num="06" />
+            <SectionNumber num="07" />
             <h2
               className="relative z-10 font-display font-bold text-text-primary"
               style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', letterSpacing: '-0.03em', lineHeight: 1.05, paddingTop: '0.1em' }}
