@@ -230,6 +230,14 @@
         "description": "Interactive car configurator rendered in real time with Three.js — orbit the model and customize it live in the browser.",
         "stack": ["React", "Three.js", "Vite"],
         "url": "https://3d-studio-iota.vercel.app"
+      },
+      {
+        "id": "sharing-spheres",
+        "name": "Sharing Spheres",
+        "kind": "Experiment · multi-window 3D",
+        "description": "Open two browser windows side by side — each gets a particle sphere in one shared 3D space, and text typed in one syncs live to the others over WebSockets.",
+        "stack": ["TypeScript", "Three.js", "WebSockets", "Cloudflare Workers"],
+        "url": "https://sharing-spheres.vercel.app"
       }
     ]
   },
