@@ -238,6 +238,22 @@
         "description": "Open two browser windows side by side — each gets a particle sphere in one shared 3D space, and text typed in one syncs live to the others over WebSockets.",
         "stack": ["TypeScript", "Three.js", "WebSockets", "Cloudflare Workers"],
         "url": "https://sharing-spheres.vercel.app"
+      },
+      {
+        "id": "3d-interior",
+        "name": "3D Interior",
+        "kind": "Web app · 3D scene",
+        "description": "A furnished living room modeled in Blender, compressed from a 180 MB scene to a 6 MB GLB and rendered in the browser with HDRI daylight through the window.",
+        "stack": ["React", "React Three Fiber", "Three.js", "Vite"],
+        "url": "https://3d-interior-gamma.vercel.app"
+      },
+      {
+        "id": "3d-illusion",
+        "name": "Illusion",
+        "kind": "Experiment · optical illusions",
+        "description": "Optical illusions in 3D: an impossible triangle that only works from one true eye, and a small box whose six faces each open onto a different world. Orbit to break them.",
+        "stack": ["JavaScript", "Three.js"],
+        "url": "https://3d-illusion.vercel.app"
       }
     ]
   },
