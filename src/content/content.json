@@ -254,6 +254,14 @@
         "description": "Optical illusions in 3D: an impossible triangle that only works from one true eye, and a small box whose six faces each open onto a different world. Orbit to break them.",
         "stack": ["JavaScript", "Three.js"],
         "url": "https://3d-illusion.vercel.app"
+      },
+      {
+        "id": "wii-simulator",
+        "name": "Wii Simulator",
+        "kind": "Web app · motion game console",
+        "description": "Your phone becomes a Wii-style motion controller and any screen becomes the console, with nothing to install. Scan the QR code on the display, then swing your phone to play Flappy, Fruit Slash or Star Fighter. Motion is streamed in real time over a WebSocket relay. Needs a phone with motion sensors.",
+        "stack": ["TypeScript", "Three.js", "WebSockets", "PWA", "Node.js"],
+        "url": "https://wii-display.pages.dev"
       }
     ]
   },
