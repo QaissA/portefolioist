@@ -265,11 +265,11 @@
       },
       {
         "id": "sneaker-wall",
-        "name": "Sneaker Wall",
-        "kind": "Web app · collection dashboard",
-        "description": "A visual catalogue of my sneaker collection: rotation, grails, beaters and archive pairs, grouped by silhouette like a clean sneaker wall. Search and filter by model, brand, colorway or status, and open any pair for details.",
-        "stack": ["React", "Framer Motion", "Vite"],
-        "url": "https://sneaker-wall.vercel.app"
+        "name": "Sneakers Wall",
+        "kind": "Web app · 3D showcase",
+        "description": "A 3D wall of sneaker models rendered in the browser. Hover a pair for a quick glass card with its brand and story, click it to pull it off the wall for a closer look, then press Esc to put it back.",
+        "stack": ["JavaScript", "Three.js", "Vite"],
+        "url": "https://sneakers-wall.vercel.app"
       }
     ]
   },
