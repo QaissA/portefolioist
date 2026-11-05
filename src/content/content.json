@@ -262,6 +262,14 @@
         "description": "Your phone becomes a Wii-style motion controller and any screen becomes the console, with nothing to install. Scan the QR code on the display, then swing your phone to play Flappy, Fruit Slash or Star Fighter. Motion is streamed in real time over a WebSocket relay. Needs a phone with motion sensors.",
         "stack": ["TypeScript", "Three.js", "WebSockets", "PWA", "Node.js"],
         "url": "https://wii-display.pages.dev"
+      },
+      {
+        "id": "sneaker-wall",
+        "name": "Sneaker Wall",
+        "kind": "Web app · collection dashboard",
+        "description": "A visual catalogue of my sneaker collection: rotation, grails, beaters and archive pairs, grouped by silhouette like a clean sneaker wall. Search and filter by model, brand, colorway or status, and open any pair for details.",
+        "stack": ["React", "Framer Motion", "Vite"],
+        "url": "https://sneaker-wall.vercel.app"
       }
     ]
   },
