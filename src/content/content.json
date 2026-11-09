@@ -105,8 +105,7 @@
       { "value": 85, "suffix": "%+", "label": "Test coverage", "sublabel": "and -60% production bugs", "prefix": "" },
       { "value": 50, "suffix": "%", "label": "Onboarding time cut", "sublabel": "via AI-generated documentation", "prefix": "-" },
       { "value": 40, "suffix": "%", "label": "Faster feature delivery", "sublabel": "via AI agent orchestration", "prefix": "-" },
-      { "value": 10000, "suffix": "+", "label": "Active users served", "sublabel": "on production architecture", "prefix": "" },
-      { "value": 4.2, "suffix": "/5", "label": "Mobile app rating", "sublabel": "on app stores", "prefix": "" }
+      { "value": 10000, "suffix": "+", "label": "Active users served", "sublabel": "on production architecture", "prefix": "" }
     ]
   },
 
