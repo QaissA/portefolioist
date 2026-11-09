@@ -270,6 +270,14 @@
         "description": "A 3D wall of sneaker models rendered in the browser. Hover a pair for a quick glass card with its brand and story, click it to pull it off the wall for a closer look, then press Esc to put it back.",
         "stack": ["JavaScript", "Three.js", "Vite"],
         "url": "https://sneakers-wall.vercel.app"
+      },
+      {
+        "id": "8-ball-pool",
+        "name": "8-Ball Pool",
+        "kind": "Browser game · 3D pool",
+        "description": "A 3D 8-ball pool game in the browser. Aim, drag down and release to shoot, and add side or top spin to the cue ball. Play the computer on three difficulty levels, practice alone, pass and play with a friend, or create an online room and share the code.",
+        "stack": ["JavaScript", "Three.js", "Vite"],
+        "url": "https://3d-8ball.vercel.app"
       }
     ]
   },
