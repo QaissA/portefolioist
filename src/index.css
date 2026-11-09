@@ -4,17 +4,17 @@
 
 :root {
   /* Themeable colors as space-separated RGB channels (consumed via rgb(var(--x) / a)) */
-  --color-bg: 10 10 10;
-  --color-surface: 17 17 17;
-  --color-surface-2: 26 26 26;
-  --color-border: 42 42 42;
-  --color-accent: 245 158 11;
-  --color-accent-400: 251 191 36;
-  --color-accent-600: 217 119 6;
-  --color-accent-2: 236 72 153;
-  --color-text-primary: 245 245 245;
-  --color-text-secondary: 161 161 170;
-  --color-text-muted: 82 82 91;
+  --color-bg: 29 30 44;
+  --color-surface: 36 37 54;
+  --color-surface-2: 45 46 66;
+  --color-border: 63 65 96;
+  --color-accent: 221 189 213;
+  --color-accent-400: 228 204 222;
+  --color-accent-600: 181 155 175;
+  --color-accent-2: 172 159 187;
+  --color-text-primary: 247 235 236;
+  --color-text-secondary: 186 193 200;
+  --color-text-muted: 149 151 186;
   /* Themeable typography */
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;

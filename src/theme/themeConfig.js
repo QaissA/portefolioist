@@ -9,6 +9,36 @@ export const STORAGE_KEY = 'portfolio-theme'
 // secondary). Covers dark, light, bubbly and vibrant looks.
 export const THEMES = [
   {
+    name: 'Dusk',
+    mode: 'dark',
+    colors: {
+      bg: '29 30 44', // shadow grey #1d1e2c
+      surface: '36 37 54', // between shadow grey 500 and 600 (palette has no step there)
+      surface2: '45 46 66',
+      border: '63 65 96', // shadow-grey-600
+      accent: '221 189 213', // thistle #ddbdd5
+      accent2: '172 159 187', // lilac ash #ac9fbb
+      textPrimary: '247 235 236', // lavender blush #f7ebec
+      textSecondary: '186 193 200', // blue-slate-800
+      textMuted: '149 151 186', // shadow-grey-800
+    },
+  },
+  {
+    name: 'Onyx',
+    mode: 'dark',
+    colors: {
+      bg: '12 15 10', // onyx #0c0f0a
+      surface: '19 24 16', // between onyx 500 and 600 (palette has no step there)
+      surface2: '28 35 23',
+      border: '59 73 49', // onyx-600
+      accent: '255 32 110', // neon pink #ff206e
+      accent2: '65 234 212', // turquoise #41ead4
+      textPrimary: '255 255 255',
+      textSecondary: '205 216 197', // onyx-900
+      textMuted: '105 132 88', // onyx-700
+    },
+  },
+  {
     name: 'Midnight',
     mode: 'dark',
     colors: {
@@ -86,7 +116,7 @@ export const THEMES = [
 ]
 
 export const DEFAULT_THEME = {
-  palette: 'Midnight',
+  palette: 'Dusk',
   customAccent: null, // channel string overriding the palette's primary accent
   customAccent2: null, // channel string overriding the palette's secondary accent
   font: 'Space Grotesk',

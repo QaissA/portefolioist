@@ -75,7 +75,7 @@ export default function Preloader({ onComplete }) {
       {/* Progress bar track */}
       <div
         className="relative"
-        style={{ width: '300px', height: '2px', background: '#1A1A1A', borderRadius: '2px' }}
+        style={{ width: '300px', height: '2px', background: 'rgb(var(--color-surface-2))', borderRadius: '2px' }}
       >
         <div
           ref={barRef}
@@ -85,7 +85,7 @@ export default function Preloader({ onComplete }) {
             top: 0,
             height: '100%',
             width: '0px',
-            background: '#F59E0B',
+            background: 'rgb(var(--color-accent))',
             borderRadius: '2px',
           }}
         />
@@ -98,7 +98,7 @@ export default function Preloader({ onComplete }) {
         style={{
           fontSize: 'clamp(1.2rem, 3vw, 2rem)',
           letterSpacing: '0.15em',
-          color: '#F59E0B',
+          color: 'rgb(var(--color-accent))',
           fontFamily: 'JetBrains Mono, monospace',
         }}
       >
